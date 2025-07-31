@@ -11,5 +11,10 @@ app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{os.getenv('POSTGRES_USER
 def index():
     return render_template('index.html')
 
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
