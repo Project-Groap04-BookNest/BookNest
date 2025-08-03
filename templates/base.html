@@ -1,11 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>BookNest</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body>
-    
+
+  <!-- Navbar -->
+  <nav style="background-color: black; color: white; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between;">
+  <!-- Left: Logo + Title -->
+  <div style="display: flex; align-items: center; gap: 0.75rem;">
+    <a href="{{ url_for('index') }}" style="display: flex; align-items: center; text-decoration: none;">
+      <img src="{{ url_for('static', filename='assets/home-icon.svg') }}" alt="home-icon" style="width: 24px; height: 24px;">
+      <span style="margin-left: 0.5rem; font-weight: bold; color: white;">BookNest</span>
+    </a>
+  </div>
+
+  <!-- Right: User + Login + Cart -->
+  <div style="display: flex; align-items: center; gap: 1.25rem;">
+    <!-- Login -->
+    <a href="{{ url_for('login') }}" style="display: flex; align-items: center; gap: 0.4rem; text-decoration: none; color: white;">
+      <img src="{{ url_for('static', filename='assets/user-icon.svg') }}" alt="user-icon" style="width: 20px; height: 20px;">
+      <img src="{{ url_for('static', filename='assets/login-icon.svg') }}" alt="login-icon" style="width: 20px; height: 20px;">
+      <span>Login</span>
+    </a>
+
+    <!-- Cart -->
+    <a href="{{ url_for('orders') }}" style="display: flex; align-items: center; text-decoration: none;">
+      <img src="{{ url_for('static', filename='assets/cart-icon.svg') }}" alt="cart-icon" style="width: 22px; height: 22px;">
+    </a>
+  </div>
+</nav>
+
+  <!-- Main Content -->
+  <main style="padding: 2rem;">
+    {% block content %}
+    {% endblock %}
+  </main>
+
 </body>
 </html>

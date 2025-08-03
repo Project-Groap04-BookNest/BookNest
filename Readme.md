@@ -56,7 +56,8 @@ python mock.py
 ### 5️⃣ Run Flask server
 
 ```bash
-python app.py
+python -m flask --app app.py --debug run
+
 ```
 
 ### 6️⃣ Access the app
