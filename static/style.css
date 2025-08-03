@@ -1,3 +1,11 @@
 body {
   background-color: #514F4F;
 }
+
+p{
+    color: white;
+}
+
+h1, h3, h4, h5, h6 {
+    color: white;
+}
