@@ -1,4 +1,4 @@
-from flask import Flask ,render_template
+from flask import Flask ,render_template , request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import os 
 
@@ -14,7 +14,16 @@ def index():
 
 @app.route('/login')
 def login():
-    return render_template('login.html')
+     if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        # เช็คจาก database / session
+        return redirect(url_for("index"))
+     return render_template('login.html')
+ 
+@app.route('/orders')
+def orders():
+    return render_template("orders.html")
 
 if __name__ == '__main__':
     app.run(debug=True)

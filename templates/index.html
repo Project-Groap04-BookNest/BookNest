@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask app</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <header>Flask app test</header>
-        <a href="{{ url_for('login') }}">loginpage</a>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<div class="index container">
+    <h1 class="text-2xl font-bold mb-4">Welcome to BookNest</h1>
+    <p class="mb-4">
+        BookNest is your go-to platform for discovering and ordering books online. Explore our collection and find your next read!
+    </p>
+    {% endblock %}">
