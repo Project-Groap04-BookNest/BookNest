@@ -23,7 +23,7 @@ def login():
         password = request.form.get("password")
         user = User.query.filter_by(email=email, password_hash=password).first()
         if user:
-            return redirect(url_for("orders"))
+            return redirect(url_for("index"))
         else:
             return render_template('login.html', error="rahat mai tug")
     return render_template('login.html')
