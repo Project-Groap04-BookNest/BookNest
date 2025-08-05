@@ -1,66 +1,79 @@
 {% extends "base.html" %}
 {% block content %}
-<main>
-    <div class="cart-container">
-      <section class="cart-items">
-        <h2>ตะกร้าสินค้า</h2>
+<main class="bg-gray-300 rounded-2xl p-5 mt-5">
+  <div class="flex flex-wrap gap-10">
+    
+    <!-- Cart Items -->
+    <section class="flex-1 min-w-[300px]">
+      <h2 class="mb-4 border-b border-gray-500 pb-2 text-xl font-bold">ตะกร้าสินค้า</h2>
 
-        <div class="item">
-          <input type="checkbox" />
-          <img src="/static/assets/image.png" alt="book" />
-          <div class="details">
-            <p><strong>(LN)</strong> ชีวิตวุ่นวายของนายขี้ดินฯ เล่ม 1</p>
-            <p>฿911.00</p>
-            <div class="qty">
-              <span>จำนวน</span>
-              <button>-</button>
-              <span>1</span>
-              <button>+</button>
-              <button class="delete">🗑️</button>
-            </div>
+      <!-- Item -->
+      <div class="flex items-start mb-5">
+        <input type="checkbox" class="mt-2" />
+        <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="book" class="object-cover mx-2" />
+        <div class="flex flex-col">
+          <p class="my-1"><strong>(LN)</strong> ชีวิตวุ่นวายของนายขี้ดินฯ เล่ม 1</p>
+          <p class="my-1">฿911.00</p>
+          <div class="flex items-center gap-2 mt-2">
+            <span>จำนวน</span>
+            <button class="px-3 py-1 bg-black text-white rounded">-</button>
+            <span>1</span>
+            <button class="px-3 py-1 bg-black text-white rounded">+</button>
+            <button class="px-3 py-1 text-white rounded">
+              <img src="{{ url_for('static', filename='assets/Trash-icon.svg') }}" alt="Trash-icon" class="w-4 h-4" />
+            </button>
           </div>
         </div>
-        
-        <div class="item">
-          <input type="checkbox" />
-          <img src="/static/assets/image.png" alt="book" />
-          <div class="details">
-            <p><strong>(LN)</strong> ชีวิตวุ่นวายของนายขี้ดินฯ เล่ม 2</p>
-            <p>฿911.00</p>
-            <div class="qty">
-              <span>จำนวน</span>
-              <button>-</button>
-              <span>1</span>
-              <button>+</button>
-              <button class="delete">🗑️</button>
-            </div>
-          </div>        
+      </div>
 
-      </section>
+      <!-- Item -->
+      <div class="flex items-start mb-5">
+        <input type="checkbox" class="mt-2" />
+        <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="book" class="object-cover mx-2" />
+        <div class="flex flex-col">
+          <p class="my-1"><strong>(LN)</strong> ชีวิตวุ่นวายของนายขี้ดินฯ เล่ม 2</p>
+          <p class="my-1">฿911.00</p>
+          <div class="flex items-center gap-2 mt-2">
+            <span>จำนวน</span>
+            <button class="px-3 py-1 bg-black text-white rounded">-</button>
+            <span>1</span>
+            <button class="px-3 py-1 bg-black text-white rounded">+</button>
+            <button class="px-3 py-1 text-white rounded">
+              <img src="{{ url_for('static', filename='assets/Trash-icon.svg') }}" alt="Trash-icon" class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <section class="summary">
-        <h2>สรุปคำสั่งซื้อ</h2>
-        <div class="line-item">
-          <span>ค่าจัดส่ง</span>
-          <span>฿ 50.00</span>
-        </div>
-        <div class="line-item">
-          <span>(LN) ชีวิตวุ่นวายของนายขี้ดินฯ เล่ม 1</span>
-          <span>฿ 911.00</span>
-        </div>
-        <div class="line-item">
-          <span>(LN) ชีวิตวุ่นวายของนายขี้ดินฯ เล่ม 2</span>
-          <span>฿ 911.00</span>
-        </div>
-        <div class="total">
-          <span>ราคารวม</span>
-          <span>฿ 1872.00</span>
-        </div>
-        <div class="buttons">
-          <button class="back">ไปหน้าแรก</button>
-          <button class="order">สั่งซื้อ ➤</button>
-        </div>
-      </section>
-    </div>
-  </main>
+    <!-- Summary -->
+    <section class="flex-1 min-w-[300px]">
+      <h2 class="mb-4 border-b border-gray-500 pb-2 text-xl font-bold">สรุปคำสั่งซื้อ</h2>
+
+      <div class="flex justify-between my-2">
+        <span>ค่าจัดส่ง</span>
+        <span>฿ 50.00</span>
+      </div>
+      <div class="flex justify-between my-2">
+        <span>(LN) ชีวิตวุ่นวายของนายขี้ดินฯ เล่ม 1</span>
+        <span>฿ 911.00</span>
+      </div>
+      <div class="flex justify-between my-2">
+        <span>(LN) ชีวิตวุ่นวายของนายขี้ดินฯ เล่ม 2</span>
+        <span>฿ 911.00</span>
+      </div>
+
+      <div class="flex justify-between mt-4 pt-3 border-t border-gray-500 font-bold">
+        <span>ราคารวม</span>
+        <span>฿ 1872.00</span>
+      </div>
+
+      <div class="flex justify-between mt-6">
+        <button class="px-5 py-2 rounded-full bg-gray-700 text-white font-bold">ไปหน้าแรก</button>
+        <button class="px-5 py-2 rounded-full bg-blue-500 text-white font-bold">สั่งซื้อ ➤</button>
+      </div>
+    </section>
+
+  </div>
+</main>
 {% endblock %}
