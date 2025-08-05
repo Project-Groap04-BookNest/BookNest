@@ -1,7 +1,8 @@
 # mock.py
 from app import app
-#from models.user import db, User
-#from models.book import Book
+from models.user import db, User
+from models.book import Book
+# from models.book import User
 import uuid
 
 with app.app_context():
