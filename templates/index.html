@@ -1,7 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="index container">
-    <h1 class="text-2xl font-bold mb-4">Welcome to BookNest</h1>
-    
-    
+    <h1 class="text-2xl font-bold mb-4 text-neutral-200">Welcome to BookNest</h1>
+   <!-- Book Selection Section -->
+<section class="max-w-5xl mx-auto mt-8 text-neutral-200 bg-neutral-800 p-6 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold mb-6 text-left">หนังสือแนะนำ</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <!-- Book Card 1 -->
+        <div class="rounded-lg shadow-md p-4 flex flex-col items-center">
+            <img src="https://i.pinimg.com/1200x/f7/24/de/f724de13e530540ab06c907668cb4b37.jpg" alt="Book 1" class="w-32 h-40 object-cover mb-4 rounded">
+            <h3 class="font-semibold text-lg mb-2">Classroom of the Elite</h3>
+            <p class=" mb-4 text-center">เครื่องมือ</p>
+            <span class="font-bold  mb-2">฿250</span>
+            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full ">add to cart</button>
+            
+        </div>
+        <!-- Book Card 2 -->
+        <div class="rounded-lg shadow-md p-4 flex flex-col items-center">
+            <img src="https://cdn-local.mebmarket.com/meb/server1/242691/Thumbnail/book_detail_large.gif?4" alt="Book 2" class="w-32 h-40 object-cover mb-4 rounded">
+            <h3 class="font-semibold text-lg mb-2">กําเนิดบาปทาโกปี้</h3>
+            <p class=" mb-4 text-center">มนุษย์ต่างดาวจากดาวแฮปปี้เดินทางมาที่โลกมนุษย์เพื่อเผยแพร่ความสุข</p>
+            <span class="font-bold  mb-2">฿120</span>
+            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition">add to cart</button>
+        </div>
+        <!-- Book Card 3 -->
+        <div class="rounded-lg shadow-md p-4 flex flex-col items-center">
+            <img src="https://storage.naiin.com/system/application/bookstore/resource/product/202504/644800/1000281754_front_XXL.jpg?imgname=Dr.stone-%E0%B9%80%E0%B8%A5%E0%B9%88%E0%B8%A1-1-(New-Edition)" alt="Book 3" class="w-32 h-40 object-cover mb-4 rounded">
+            <h3 class="font-semibold text-lg mb-2">Dr.stone</h3>
+            <p class="mb-4 text-center">โชคไม่ใช่ส่วนหนึ่งของการทำงานของวิทยาศาสตร์</p>
+            <span class="font-bold  mb-2">฿180</span>
+            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition">add to cart</button>
+        </div>
+        <!-- เพิ่มหนังสือได้ตามต้องการ -->
+    </div>
+</section>
     {% endblock %}">
