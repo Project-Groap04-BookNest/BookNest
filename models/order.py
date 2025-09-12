@@ -16,7 +16,7 @@ class order(db.Model):
     id = db.Column(db.Integer, primary_key=True) 
 
     # เวลาที่สร้างorder
-    created_at = db.Column(DateTime(timezone=True), sever_default=func.now())
+    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
 
     # Enum สถานะการสั่งซื้อ
     status = db.Column(Enum(StatusEnum), nullable = False)
@@ -29,4 +29,4 @@ class order(db.Model):
     user = relationship("User", back_populates="orders")
 
     # เชื่อมไปยัง OrderItem
-    items = relationship("OrderItem", back_populates="order")
+    items = relationship("order_item", back_populates="order")
