@@ -27,3 +27,6 @@ class order(db.Model):
     #เชื่อม FK จาก table user
     user_id = db.Column(db.Integer , db.ForeignKey('users.id'))
     user = relationship("User", back_populates="orders")
+
+    # เชื่อมไปยัง OrderItem
+    items = relationship("OrderItem", back_populates="order")
