@@ -2,7 +2,7 @@
 
 ---
 ## 📅DB-ERD
-![alt text](/static/assets/DB_stu.PNG)
+
 
 ## 🛠 Tech Stack
 
