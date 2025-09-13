@@ -1,4 +1,3 @@
-
 from models import db
 from sqlalchemy.orm import relationship
 
@@ -9,8 +8,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(50), nullable=False)
-    #เชื่อม PK ไป table order
-    orders = relationship("order", back_populates="user")
+
+    orders = relationship("Order", back_populates="user")
 
     def __repr__(self):
         return f'<User {self.email}>'

@@ -1,8 +1,8 @@
 from models import db
 from sqlalchemy.orm import relationship
 
-class order_item(db.Model):
-    __tablename__ = 'order_item'
+class OrderItem(db.Model):
+    __tablename__ = 'order_items'
     id = db.Column(db.Integer, primary_key=True)
     
     # FK ไปที่ Order
