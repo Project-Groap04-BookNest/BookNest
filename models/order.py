@@ -9,17 +9,17 @@ class StatusEnum(enum.Enum):
     shipped = 'shipped'
     canceled = 'canceled'
 
-class order(db.Model):
+class Order(db.Model):
     # ชื่อ table
-    __tablename__ = 'order'
+    __tablename__ = 'orders'
     # PK
     id = db.Column(db.Integer, primary_key=True) 
 
     # เวลาที่สร้างorder
-    created_at = db.Column(DateTime(timezone=True), sever_default=func.now())
+    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
 
     # Enum สถานะการสั่งซื้อ
-    status = db.Column(Enum(StatusEnum), nullable = False)
+    status = db.Column(Enum(StatusEnum), nullable=False, default=StatusEnum.pending)
 
     # ราคารวมของ order 
     total_amount = db.Column(Numeric(10, 2), nullable=False)
