@@ -32,5 +32,13 @@ def login():
 def orders():
     return render_template("orders.html")
 
+@app.route('/manage_books')
+def manage_books():
+    return render_template("manage_books.html")
+
+@app.route('/manage_users')
+def manage_users():
+    return render_template("manage_user.html")
+
 if __name__ == '__main__':
     app.run(debug=True)
