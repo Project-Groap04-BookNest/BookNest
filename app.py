@@ -25,7 +25,7 @@ def login():
         if user:
             return redirect(url_for("index"))
         else:
-            return render_template('login.html', error="rahat mai tug")
+            return render_template('login.html', error="Password incorrect.")
     return render_template('login.html')
  
 @app.route('/orders')
