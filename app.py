@@ -38,7 +38,7 @@ def manage_books():
 
 @app.route('/manage_users')
 def manage_users():
-    return render_template("manage_user.html")
+    return render_template("manage_users.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
