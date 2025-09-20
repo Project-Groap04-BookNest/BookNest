@@ -75,7 +75,7 @@ python -m flask --app app.py --debug run
 
 | Field    | Value                 |
 | -------- | --------------------- |
-| Email    | admin\@booknest.local |
+| Email    | admin@example.com     |
 | Password | admin1234             |
 
 ### 🔌 Connect DB (ครั้งแรก)
@@ -115,21 +115,44 @@ git checkout -b feat/models-user
 ## 📁 Project Structure
 
 ```
-booknest/
-├── app.py
-├── mock.py
-├── docker-compose.yml
-├── requirements.txt
-├── .env / .env.example
-├── /models
-│   ├── user.py, book.py, order.py, order_item.py
-├── /static
-│   └── uploads/ (book images)
-├── /templates
-│   └── Jinja2 HTML templates
-├── /tests
-└── /venv
-```
+BookNest/
+├── app.py                  # main entry point (สร้าง Flask app, register blueprints)
+├── config.py               # config สำหรับ DB + ENV
+├── docker-compose.yml      # (ถ้าใช้ docker)
+├── mock.py                 # สคริปต์สร้าง mock data
+├── requirements.txt        # dependency ทั้งหมด
+├── .env                    # เก็บ secret และค่า config
+├── .gitignore
+├── Readme.md
+
+├── models/                 # ORM models (SQLAlchemy)
+│   ├── __init__.py
+│   ├── user.py
+│   ├── book.py
+│   ├── book_categories.py
+│   ├── order.py
+│   └── order_item.py
+
+├── routes/                 # แยก route ออกมาเป็น Blueprint เป็น class จัดการง่าย หน้า app.py สะอาด
+│   ├── ui_routes.py        # route สำหรับ render template (Jinja2) ก็คือระบบ html ของ flask 
+│   └── api_routes.py       # route สำหรับ JSON API เวลาเขียน api มาทำในนี้ 
+
+├── static/                 # ไฟล์ static (CSS, JS, รูปภาพ)
+│   ├── style.css
+│   └── assets/
+│       └── (icons, images)
+
+├── templates/              # Jinja2 templates (HTML)
+│   ├── base.html
+│   ├── index.html
+│   ├── login.html
+│   ├── orders.html
+│   ├── manage_books.html
+│   └── manage_users.html
+
+├── tests/                  # unit tests เผื่อได้ใช้
+│   └── ...
+└── venv/                   # virtual environment
 
 ---
 
