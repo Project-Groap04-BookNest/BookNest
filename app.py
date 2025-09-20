@@ -1,44 +1,29 @@
-from flask import Flask ,render_template , request, redirect, url_for
-import os 
+from flask import Flask
 from models import db
-from models.user import User
+from config import Config
 from dotenv import load_dotenv
+# import blueprints ตัว front-end มา 
+from routes.ui_routes import ui_bp
+# import routes.api_routes
 
+# โหลด .env ที่นี่ (ก่อนใช้ Config)
 load_dotenv()
 
-app = Flask(__name__)
+#end-point ของตัวเว็บ 
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    db.init_app(app)
+    
+     # register blueprints
+    app.register_blueprint(ui_bp)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@localhost:5432/{os.getenv('POSTGRES_DB')}"
-db.init_app(app)
-
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-        user = User.query.filter_by(email=email, password_hash=password).first()
-        if user:
-            return redirect(url_for("index"))
-        else:
-            return render_template('login.html', error="Password incorrect.")
-    return render_template('login.html')
- 
-@app.route('/orders')
-def orders():
-    return render_template("orders.html")
+    return app
 
-@app.route('/manage_books')
-def manage_books():
-    return render_template("manage_books.html")
 
-@app.route('/manage_users')
-def manage_users():
-    return render_template("manage_users.html")
-
-if __name__ == '__main__':
+# ระบบ debug ของ flask
+if __name__ == "__main__":
+    app = create_app()
     app.run(debug=True)
