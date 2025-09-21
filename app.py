@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 # import blueprints ตัว front-end มา 
 from routes.ui_routes import ui_bp
 # import routes.api_routes
-
+from routes.api_routes import api_bp
 # โหลด .env ที่นี่ (ก่อนใช้ Config)
 load_dotenv()
 
@@ -15,8 +15,11 @@ def create_app():
     app.config.from_object(Config)
     db.init_app(app)
     
-     # register blueprints
+     # register blueprints เอาข้อมูล router เข้ามา
     app.register_blueprint(ui_bp)
+    
+    #register api เอาข้อมูล api เข้ามา 
+    app.register_blueprint(api_bp)
 
 
 

@@ -1,58 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Manage Books</h1>
-  <main class="px-8 py-6">
-    <h2 class="text-xl font-semibold mb-4">
-      (LN) ชีวิตวุ่นวายของนายขี่ดินม้า
-    </h2>
+<h1 class="text-2xl font-bold mb-4">Manage Books</h1>
 
-    <!-- Books Grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-      
-      <!-- Book Card -->
+<main class="px-8 py-6">
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+
+    {% for book in books %}
       <div class="bg-gray-800 rounded-xl p-3 flex flex-col">
-        <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="Book 1" class="rounded-lg mb-3">
+        <img src="{{ url_for('static', filename=book.image_path or 'assets/mock-book01.svg') }}"
+             alt="{{ book.title }}"
+             class="rounded-lg mb-3">
+        <div class="flex flex-col">
+          <h2 class="text-white text-lg font-semibold mb-1">{{ book.title }}</h2>
+          <p class="text-gray-300 text-sm mb-2">by {{ book.author }}</p>
+        </div>
         <div class="flex items-center justify-between bg-black rounded-md px-3 py-1">
-          <span class="text-lg text-white">0 Book left</span> 
+          <span class="text-lg text-white">{{ book.stock_quantity }} left</span>
           <button class="bg-gray-900 text-white px-2 py-1 rounded hover:bg-gray-600">+</button>
         </div>
       </div>
-      
-      <div class="bg-gray-800 rounded-xl p-3 flex flex-col">
-        <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="Book 2" class="rounded-lg mb-3">
-        <div class="flex items-center justify-between bg-black rounded-md px-3 py-1">
-          <span class="text-lg text-white">0 Book left</span> 
-          <button class="bg-gray-900 text-white px-2 py-1 rounded hover:bg-gray-600">+</button>
-        </div>
-      </div>
+    {% endfor %}
 
-      <div class="bg-gray-800 rounded-xl p-3 flex flex-col">
-        <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="Book 3" class="rounded-lg mb-3">
-        <div class="flex items-center justify-between bg-black rounded-md px-3 py-1">
-          <span class="text-lg text-white">0 Book left</span> 
-          <button class="bg-gray-900 text-white px-2 py-1 rounded hover:bg-gray-600">+</button>
-        </div>
-      </div>
-
-      <div class="bg-gray-800 rounded-xl p-3 flex flex-col">
-        <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="Book 4" class="rounded-lg mb-3">
-        <div class="flex items-center justify-between bg-black rounded-md px-3 py-1">
-          <span class="text-lg text-white">0 Book left</span> 
-          <button class="bg-gray-900 text-white px-2 py-1 rounded hover:bg-gray-600">+</button>
-        </div>
-      </div>
-
-      <div class="bg-gray-800 rounded-xl p-3 flex flex-col">
-        <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="Book 5" class="rounded-lg mb-3">
-        <div class="flex items-center justify-between bg-black rounded-md px-3 py-1">
-          <span class="text-lg text-white">0 Book left</span> 
-          <button class="bg-gray-900 text-white px-2 py-1 rounded hover:bg-gray-600">+</button>
-        </div>
-      </div>
-
-    </div>
-  </main>
-</body>
-</html>
+  </div>
+</main>
 {% endblock %}
