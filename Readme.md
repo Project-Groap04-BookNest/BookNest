@@ -172,6 +172,8 @@ python -m flask --app app.py --debug run
 - **Book (1) → (M) OrderItem**  
 - **BookCategory (1) → (M) Book**
 
+
+
 # 🌐 การทำงานของ API และการเชื่อมเข้าหน้าเว็บ (Flask + Jinja2)
 
 ## 🌐 API Routes
@@ -198,23 +200,25 @@ python -m flask --app app.py --debug run
     "stock_quantity": 10
   }
 ]
+```
 
-🖥️ UI Routes
+# 🖥️ UI Routes
 
-หน้าเว็บ /manage_books จะ query ข้อมูลจาก ตาราง Book ใน DB โดยตรง
+หน้าเว็บ `/manage_books` จะ query ข้อมูลจากตาราง **Book** ใน DB โดยตรง  
+แล้วส่งข้อมูลไปยัง **Jinja2 Template** เพื่อ render หน้าเว็บ  
 
-ส่งข้อมูลไปยัง Jinja2 Template เพื่อ render หน้าเว็บ
+---
 
-🎨 Template (Jinja2)
+## 🎨 Template (Jinja2)
 
-ไฟล์: templates/manage_books.html
+ไฟล์: `templates/manage_books.html`  
 
-ใช้ {% for book in books %} เพื่อ loop แสดงข้อมูล
+ใช้ `{% for book in books %}` เพื่อ loop แสดงข้อมูล  
+โดยดึง column จาก table **Book** เช่น `title`, `author`, `stock_quantity`, `image_path`  
 
-ดึง column จาก table Book เช่น title, author, stock_quantity, image_path
+**ตัวอย่างการ render:**
 
-ตัวอย่างการ render:
-
+```jinja2
 {% for book in books %}
   <div class="bg-gray-800 rounded-xl p-3 flex flex-col">
     <img src="{{ url_for('static', filename=book.image_path or 'assets/mock-book01.svg') }}"
@@ -230,10 +234,11 @@ python -m flask --app app.py --debug run
     </div>
   </div>
 {% endfor %}
+```
 
-🔄 Flow การทำงาน
+### 🔄 Flow การทำงาน
 
-ผู้ใช้เปิดหน้า /manage_books
+``` ผู้ใช้เปิดหน้า /manage_books
 
 Flask (UI Route) query ข้อมูลจากตาราง Book
 
@@ -260,9 +265,11 @@ app.py
 init database
 
 register blueprints (ทั้ง API และ UI)
+```
 
----
----
+
+
+
 
 ## 🧪 Testing
 
