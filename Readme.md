@@ -87,6 +87,182 @@ python -m flask --app app.py --debug run
 - DB name: `booknest`
 
 ---
+# 📘 วิธีสร้าง API และเชื่อมเข้ากับหน้าเว็บใน Flask
+
+โปรเจคนี้ใช้ **Flask + SQLAlchemy + Jinja2**  
+แนวคิดคือ
+1. ทำ **API** สำหรับดึงข้อมูลจาก Database
+2. ทำ **UI Route** ที่จะ query DB โดยตรง และส่งข้อมูลไป render ที่หน้า HTML (Jinja2 Template)
+
+---
+
+## 🔹 ก่อนเริ่ม ต้องเข้าใจ Database
+- แต่ละหน้าเว็บจะแสดงข้อมูลจาก **Table** ที่อยู่ใน Database  
+- เช่น หน้า `manage_books` ต้องดู **ตาราง Book** ใน DB ก่อน ว่ามี column อะไรบ้าง  
+
+# 📂 Database Schema (BookNest)
+
+## 1. User
+เก็บข้อมูลผู้ใช้ระบบ
+
+| Column        | Type        | Description                      |
+|---------------|-------------|----------------------------------|
+| id            | Integer PK  | รหัสผู้ใช้                       |
+| name          | String      | ชื่อ                              |
+| email         | String (UQ) | อีเมล (unique)                   |
+| password_hash | String      | รหัสผ่าน (เก็บ hash)             |
+| role          | String/Enum | บทบาท (user, stock_keeper, admin)|
+
+---
+
+## 2. BookCategory
+หมวดหมู่ของหนังสือ
+
+| Column | Type       | Description   |
+|--------|------------|---------------|
+| id     | Integer PK | รหัสหมวดหมู่ |
+| name   | String     | ชื่อหมวดหมู่ |
+
+---
+
+## 3. Book
+เก็บรายละเอียดหนังสือ
+
+| Column         | Type        | Description              |
+|----------------|-------------|--------------------------|
+| id             | Integer PK  | รหัสหนังสือ              |
+| title          | String      | ชื่อหนังสือ             |
+| author         | String      | ผู้เขียน                 |
+| price          | Decimal     | ราคาหนังสือ             |
+| stock_quantity | Integer     | จำนวนคงเหลือ            |
+| image_path     | String      | path รูปภาพ              |
+| category_id    | FK          | อ้างอิง → BookCategory.id|
+
+---
+
+## 4. Order
+เก็บข้อมูลออเดอร์
+
+| Column     | Type        | Description                        |
+|------------|-------------|------------------------------------|
+| id         | Integer PK  | รหัสออเดอร์                        |
+| user_id    | FK          | อ้างอิง → User.id (ใครสั่งซื้อ)     |
+| status     | String/Enum | สถานะ (pending, paid, shipped)    |
+| created_at | DateTime    | เวลาในการสร้างออเดอร์              |
+
+---
+
+## 5. OrderItem
+เก็บรายละเอียดสินค้าในออเดอร์ (M:N ระหว่าง Order และ Book)
+
+| Column   | Type        | Description                     |
+|----------|-------------|---------------------------------|
+| id       | Integer PK  | รหัส row                        |
+| order_id | FK          | อ้างอิง → Order.id               |
+| book_id  | FK          | อ้างอิง → Book.id                |
+| quantity | Integer     | จำนวนที่สั่งซื้อ                 |
+| price    | Decimal     | ราคาต่อหน่วย (ตอนสั่งซื้อ)      |
+
+---
+
+# 🔗 ERD (ความสัมพันธ์)
+
+- **User (1) → (M) Order**  
+- **Order (1) → (M) OrderItem**  
+- **Book (1) → (M) OrderItem**  
+- **BookCategory (1) → (M) Book**
+
+# 🌐 การทำงานของ API และการเชื่อมเข้าหน้าเว็บ (Flask + Jinja2)
+
+## 🌐 API Routes
+
+### `GET /api/get_books`
+- ดึงข้อมูลหนังสือทั้งหมดจาก Database  
+- ส่งกลับเป็น JSON  
+
+**Response (ตัวอย่าง):**
+```json
+[
+  {
+    "id": 1,
+    "title": "Python 101",
+    "author": "Guido",
+    "price": "299.00",
+    "stock_quantity": 5
+  },
+  {
+    "id": 2,
+    "title": "Flask Mastery",
+    "author": "Miguel",
+    "price": "450.00",
+    "stock_quantity": 10
+  }
+]
+
+🖥️ UI Routes
+
+หน้าเว็บ /manage_books จะ query ข้อมูลจาก ตาราง Book ใน DB โดยตรง
+
+ส่งข้อมูลไปยัง Jinja2 Template เพื่อ render หน้าเว็บ
+
+🎨 Template (Jinja2)
+
+ไฟล์: templates/manage_books.html
+
+ใช้ {% for book in books %} เพื่อ loop แสดงข้อมูล
+
+ดึง column จาก table Book เช่น title, author, stock_quantity, image_path
+
+ตัวอย่างการ render:
+
+{% for book in books %}
+  <div class="bg-gray-800 rounded-xl p-3 flex flex-col">
+    <img src="{{ url_for('static', filename=book.image_path or 'assets/mock-book01.svg') }}"
+         alt="{{ book.title }}"
+         class="rounded-lg mb-3">
+    <div class="flex flex-col">
+      <h2 class="text-white text-lg font-semibold mb-1">{{ book.title }}</h2>
+      <p class="text-gray-300 text-sm mb-2">by {{ book.author }}</p>
+    </div>
+    <div class="flex items-center justify-between bg-black rounded-md px-3 py-1">
+      <span class="text-lg text-white">{{ book.stock_quantity }} left</span>
+      <button class="bg-gray-900 text-white px-2 py-1 rounded hover:bg-gray-600">+</button>
+    </div>
+  </div>
+{% endfor %}
+
+🔄 Flow การทำงาน
+
+ผู้ใช้เปิดหน้า /manage_books
+
+Flask (UI Route) query ข้อมูลจากตาราง Book
+
+ส่งตัวแปร books ไปที่ Jinja2 Template
+
+Template ใช้ {% for book in books %} loop แล้ว render HTML แสดงผล
+
+✅ สรุปสำหรับมือใหม่
+
+API Routes (routes/api_routes.py)
+ใช้ส่งข้อมูลเป็น JSON (เหมาะสำหรับ front-end แยก หรือ mobile app)
+
+UI Routes (routes/ui_routes.py)
+ใช้ query DB และ render HTML โดยตรงผ่าน Jinja2
+
+Database
+ต้องตรวจสอบตาราง (เช่น Book) ว่ามี column อะไรบ้าง → ถึงจะเลือกมาแสดงผลได้ถูก
+
+app.py
+เป็นศูนย์กลาง:
+
+โหลด config
+
+init database
+
+register blueprints (ทั้ง API และ UI)
+
+---
+---
 
 ## 🧪 Testing
 
