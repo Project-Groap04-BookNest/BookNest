@@ -25,7 +25,9 @@ def orders():
 
 @ui_bp.route("/manage_books")
 def manage_books():
-    return render_template("manage_books.html")
+    from models.book import Book
+    books = Book.query.all()
+    return render_template("manage_books.html", books=books)
 
 @ui_bp.route("/manage_users")
 def manage_users():
