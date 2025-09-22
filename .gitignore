@@ -3,3 +3,4 @@ venv/
 __pycache__/
 pgdata/          # ถ้า volume มาแบบ local
 .vscode
+assets/
