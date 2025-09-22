@@ -13,6 +13,12 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    
+    # ตั้ง secret key (ใช้สำหรับ session, flash message)
+    app.secret_key = "my_booknest_secret"  # หรือไปอ่านจาก .env ก็ได้
+    
+    
+        # init DB
     db.init_app(app)
     
      # register blueprints เอาข้อมูล router เข้ามา
@@ -29,4 +35,13 @@ def create_app():
 # ระบบ debug ของ flask
 if __name__ == "__main__":
     app = create_app()
+    app.secret_key = "my_booknest_secret"
+    
+    
+     # 👇 reset database
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+        
+        
     app.run(debug=True)

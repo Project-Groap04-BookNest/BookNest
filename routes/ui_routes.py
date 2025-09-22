@@ -1,5 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from models.user import User
+from models import db # เอาไว้บันทึกลง DB 
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
+from flask import session
+#ตัว hash password ของ flak สำหรับ reg
 
 ui_bp = Blueprint("ui", __name__)  # ชื่อ blueprint  มันจะไป map กับตัว html 
 
@@ -7,17 +12,32 @@ ui_bp = Blueprint("ui", __name__)  # ชื่อ blueprint  มันจะไ�
 def index():
     return render_template("index.html")
 
-@ui_bp.route("/login",endpoint = "login" , methods=["GET", "POST"])
+@ui_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        user = User.query.filter_by(email=email, password_hash=password).first()
-        if user:
-            return redirect(url_for("ui.index"))  # ต้องเรียก "ui.index"
+
+        user = User.query.filter_by(email=email).first()
+
+        # ❌ อย่าใช้ check_password_hash
+        # ✅ เทียบ plain text ตรง ๆ
+        if user and user.password_hash == password:
+            session["user_id"] = user.id
+            session["user_name"] = user.name
+            session["user_role"] = user.role
+            return redirect(url_for("ui.index"))
         else:
-            return render_template("login.html", error="Password incorrect.")
+            return render_template("login.html", error="Email หรือ Password ไม่ถูกต้อง")
+
     return render_template("login.html")
+
+
+@ui_bp.route("/logout")
+def logout():
+    session.clear()  # ลบ session ทั้งหมด
+    return redirect(url_for("ui.index"))
+
 
 @ui_bp.route("/orders")
 def orders():
@@ -32,3 +52,32 @@ def manage_books():
 @ui_bp.route("/manage_users")
 def manage_users():
     return render_template("manage_users.html")
+
+@ui_bp.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        # เช็คว่า email ซ้ำหรือเปล่า
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return render_template("register.html", error="อีเมลนี้ถูกใช้งานแล้ว")
+
+        # ❌ ไม่ต้อง hash แล้ว
+        # hashed_pw = generate_password_hash(password)
+
+        # ✅ เก็บ plain text ไปเลย
+        new_user = User(name=name, email=email, password_hash=password, role="user")
+        db.session.add(new_user)
+        db.session.commit()
+
+        # สมัครเสร็จ -> auto login
+        session["user_id"] = new_user.id
+        session["user_name"] = new_user.name
+        session["user_role"] = new_user.role
+
+        return redirect(url_for("ui.index"))
+
+    return render_template("register.html")
