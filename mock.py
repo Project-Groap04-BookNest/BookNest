@@ -1,13 +1,24 @@
 # mock.py
-from app import app
+import os
+from dotenv import load_dotenv
+from decimal import Decimal
+
+# โหลดค่า .env
+load_dotenv()
+
+from app import create_app
 from models.user import db, User
 from models.book import Book
 from models.book_categories import BookCategory
 from models.order import Order, StatusEnum
 from models.order_item import OrderItem
-from decimal import Decimal
+
+# สร้าง app จาก factory
+app = create_app()
 
 print("→ Using DB URI:", app.config.get("SQLALCHEMY_DATABASE_URI"))
+print("→ DB_USER:", os.getenv("DB_USER"))
+print("→ DB_NAME:", os.getenv("DB_NAME"))
 
 with app.app_context():
     try:
@@ -45,6 +56,14 @@ with app.app_context():
                 image_path="flask_mastery.jpg",
                 category=categories[1],
             ),
+            Book(
+                title="นักสืบตายแล้ว เล่ม 1",
+                author="นิโกะ จูยุ",
+                price=Decimal("255.00"),
+                stock_quantity=15,  # กำหนดเองได้
+                image_path="assets/book1.jpg",
+                category=categories[0],  # เปลี่ยนหมวดได้ เช่น Programming / Web Development / เพิ่มใหม่
+            ),
         ]
 
         db.session.add_all(categories + users + books)
@@ -52,7 +71,7 @@ with app.app_context():
 
         # Orders
         order1 = Order(
-            user=users[0],   # Alice สั่งซื้อ
+            user=users[0],
             status=StatusEnum.pending,
             total_amount=Decimal("749.00"),
         )
