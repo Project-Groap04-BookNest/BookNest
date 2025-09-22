@@ -60,9 +60,49 @@ with app.app_context():
                 title="นักสืบตายแล้ว เล่ม 1",
                 author="นิโกะ จูยุ",
                 price=Decimal("255.00"),
-                stock_quantity=15,  # กำหนดเองได้
+                stock_quantity=15,
                 image_path="assets/book1.jpg",
-                category=categories[0],  # เปลี่ยนหมวดได้ เช่น Programming / Web Development / เพิ่มใหม่
+                category=categories[0],
+            ),
+            Book(
+                title="แมงมุมแล้วไง ข้องใจเหรอคะ เล่ม 1",
+                author="โอกินะ บาบะ",
+                price=Decimal("230.00"),
+                stock_quantity=5,
+                image_path="assets\spiderwoman.jpg",
+                category=categories[0],
+            ),
+            Book(
+                title="จันทรานำพาสู่ต่างโลก เล่ม 1",
+                author="อาสึกิ",
+                price=Decimal("293.00"),
+                stock_quantity=3,
+                image_path="assets\tothemoon01.jpg",
+                category=categories[0],
+            ),
+            Book(
+                title="Solo Leveling เล่ม 1",
+                author="ชูกง",
+                price=Decimal("255.00"),
+                stock_quantity=8,
+                image_path="assets\solosigma01.jpg",
+                category=categories[0],
+            ),
+            Book(
+                title="มุมมองนักอ่านพระเจ้า เล่ม 1",
+                author="ซิงชอง",
+                price=Decimal("266.00"),
+                stock_quantity=5,
+                image_path="assets\godreader01.jpg",
+                category=categories[0],
+            ),
+            Book(
+                title="สุดยอดมือสังหารอวตารมาต่างโลก เล่ม 1",
+                author="รุย สึกิโยะ",
+                price=Decimal("295.00"),
+                stock_quantity=5,  # กำหนดเองได้
+                image_path="assets\padoharem01.jpg",
+                category=categories[0],
             ),
         ]
 
