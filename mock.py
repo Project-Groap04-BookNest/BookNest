@@ -27,8 +27,20 @@ with app.app_context():
 
         # Categories
         categories = [
-            BookCategory(name="Programming"),
-            BookCategory(name="Web Development"),
+            BookCategory(name="Manga"),
+            BookCategory(name="Light_Novel"),
+            BookCategory(name="Action"),
+            BookCategory(name="Adeventure"),
+            BookCategory(name="Fantasy"),
+            BookCategory(name="Isakai"),
+            BookCategory(name="Romance"),
+            BookCategory(name="Sci-fi"),
+            BookCategory(name="Harem"),
+            BookCategory(name="Comedy"),
+            BookCategory(name="Drama"),
+            BookCategory(name="School"),
+            BookCategory(name="Sport"),
+            BookCategory(name="Mystery"),
         ]
 
         # Users
@@ -69,7 +81,7 @@ with app.app_context():
                 author="โอกินะ บาบะ",
                 price=Decimal("230.00"),
                 stock_quantity=5,
-                image_path="assets\spiderwoman.jpg",
+                image_path="assets/spiderwoman01.jpg",
                 category=categories[0],
             ),
             Book(
@@ -77,7 +89,7 @@ with app.app_context():
                 author="อาสึกิ",
                 price=Decimal("293.00"),
                 stock_quantity=3,
-                image_path="assets\tothemoon01.jpg",
+                image_path="assets/tothemoon01.jpg",
                 category=categories[0],
             ),
             Book(
@@ -85,7 +97,7 @@ with app.app_context():
                 author="ชูกง",
                 price=Decimal("255.00"),
                 stock_quantity=8,
-                image_path="assets\solosigma01.jpg",
+                image_path="assets/solosigma01.jpg",
                 category=categories[0],
             ),
             Book(
@@ -93,7 +105,7 @@ with app.app_context():
                 author="ซิงชอง",
                 price=Decimal("266.00"),
                 stock_quantity=5,
-                image_path="assets\godreader01.jpg",
+                image_path="assets/godreader01.jpg",
                 category=categories[0],
             ),
             Book(
@@ -101,7 +113,7 @@ with app.app_context():
                 author="รุย สึกิโยะ",
                 price=Decimal("295.00"),
                 stock_quantity=5,  # กำหนดเองได้
-                image_path="assets\padoharem01.jpg",
+                image_path="assets/padoharem01.jpg",
                 category=categories[0],
             ),
         ]
