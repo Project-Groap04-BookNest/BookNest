@@ -82,6 +82,11 @@ async function updateQty(bookId, qty) {
   loadCart();
 }
 
+async function removeItem(bookId) {
+  await fetch("/api/cart/" + bookId, { method: "DELETE" });
+  loadCart();
+}
+
 
 
 loadCart();

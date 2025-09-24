@@ -73,5 +73,16 @@ def update_cart_item(book_id):
     session.modified = True
     return jsonify({"message": "Updated cart", "cart": cart})
 
+@api_bp.route("/cart/<book_id>", methods=["DELETE"])
+def delete_cart_item(book_id):
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
+    cart = session.get("cart", {})
+    if book_id in cart:
+        del cart[book_id]
+    session["cart"] = cart
+    session.modified = True
+    return jsonify({"message": "Item removed", "cart": cart})
+
 
 
