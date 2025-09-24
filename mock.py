@@ -419,7 +419,7 @@ with app.app_context():
                 stock_quantity=7,
                 image_path="assets/chipwar.jpg",
                 category=categories[16],
-            )
+            ),
             Book(
                 title="MUSIC 1ST EDITION BORN TO BE ALBUM BY PIPT",
                 author="พรทิพย์ ภัทรวิทย์",
