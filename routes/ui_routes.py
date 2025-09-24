@@ -3,7 +3,9 @@ from models.user import User
 from models import db # เอาไว้บันทึกลง DB 
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
-from flask import session
+from functools import wraps
+from flask import abort # เอาไว้แสดง error 403
+from flask import session 
 #ตัว hash password ของ flak สำหรับ reg
 
 ui_bp = Blueprint("ui", __name__)  # ชื่อ blueprint  มันจะไป map กับตัว html 
@@ -26,6 +28,7 @@ def login():
             session["user_id"] = user.id
             session["user_name"] = user.name
             session["user_role"] = user.role
+            session["user_email"] = user.email
             return redirect(url_for("ui.index"))
         else:
             return render_template("login.html", error="Email หรือ Password ไม่ถูกต้อง")
@@ -49,7 +52,23 @@ def manage_books():
     books = Book.query.all()
     return render_template("manage_books.html", books=books)
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # ต้อง login ก่อน
+        if "user_id" not in session:
+            return abort(403)
+
+        # ต้องเป็น admin
+        if session.get("user_role") != "admin" or session.get("user_email") != "admin@example.com":
+            return abort(403)
+
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 @ui_bp.route("/manage_users")
+@admin_required
 def manage_users():
     from models.user import User
     users = User.query.all()
