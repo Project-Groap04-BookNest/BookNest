@@ -57,3 +57,21 @@ def add_to_cart():
     session.modified = True
     return jsonify({"message": "Added to cart", "cart": cart})
 
+@api_bp.route("/cart/<book_id>", methods=["PUT"])
+def update_cart_item(book_id):
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
+    data = request.get_json()
+    qty = int(data.get("quantity", 1))
+    cart = session.get("cart", {})
+    if book_id in cart:
+        if qty > 0:
+            cart[book_id] = qty
+        else:
+            del cart[book_id]
+    session["cart"] = cart
+    session.modified = True
+    return jsonify({"message": "Updated cart", "cart": cart})
+
+
+
