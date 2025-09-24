@@ -1,17 +1,59 @@
-from flask import Blueprint , jsonify
-from models.book import Book #import ข้อมูลจาก table book 
+from flask import Blueprint, jsonify, request, session
+from models.book import Book
+from models.order import Order
+from models.order_item import OrderItem
+from app import db   
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
+# ตรวจสอบ login
+def require_login():
+    if "user_id" not in session:
+        return False
+    return True
+
 @api_bp.route("/get_books", methods=["GET"])
 def get_books():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     books = Book.query.all()
-    return jsonify([
-        {
-            "id": b.id,
-            "title": b.title,
-            "author": b.author,
-            "price": str(b.price),   # แปลง Decimal → string
-            "stock_quantity": b.stock_quantity
-        } for b in books
-    ])
+    return jsonify([{
+        "id": b.id,
+        "title": b.title,
+        "author": b.author,
+        "price": str(b.price),
+        "stock_quantity": b.stock_quantity
+    } for b in books])
+
+@api_bp.route("/cart", methods=["GET"])
+def get_cart():
+    cart = session.get("cart", {})
+    items, total = [], 0
+    for book_id, qty in cart.items():
+        book = Book.query.get(int(book_id))
+        if book:
+            subtotal = book.price * qty
+            items.append({
+                "id": book.id,
+                "title": book.title,
+                "price": str(book.price),
+                "quantity": qty,
+                "subtotal": str(subtotal)
+            })
+            total += subtotal
+    return jsonify({"items": items, "total": str(total)})
+
+@api_bp.route("/cart", methods=["POST"])
+def add_to_cart():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
+    data = request.get_json()
+    book_id = int(data.get("book_id"))
+    qty = int(data.get("quantity", 1))
+    cart = session.get("cart", {})
+    key = str(book_id)
+    cart[key] = cart.get(key, 0) + qty
+    session["cart"] = cart
+    session.modified = True
+    return jsonify({"message": "Added to cart", "cart": cart})
+
