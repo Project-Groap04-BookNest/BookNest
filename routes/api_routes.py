@@ -84,5 +84,34 @@ def delete_cart_item(book_id):
     session.modified = True
     return jsonify({"message": "Item removed", "cart": cart})
 
+@api_bp.route("/checkout", methods=["POST"])
+def checkout():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
+    cart = session.get("cart", {})
+    if not cart:
+        return jsonify({"error": "Cart is empty"}), 400
 
+    order = Order(total_amount=0)
+    db.session.add(order)
+    total = 0
+    for book_id, qty in cart.items():
+        book = Book.query.get(int(book_id))
+        if book and book.stock_quantity >= qty:
+            subtotal = book.price * qty
+            order_item = OrderItem(
+                order=order,
+                book_id=book.id,
+                quantity=qty,
+                price=book.price
+            )
+            db.session.add(order_item)
+            book.stock_quantity -= qty
+            total += subtotal
+    order.total_amount = total
+    db.session.commit()
+
+    session["cart"] = {}
+    session.modified = True
+    return jsonify({"message": "Checkout successful", "order_id": order.id})
 
