@@ -51,7 +51,9 @@ def manage_books():
 
 @ui_bp.route("/manage_users")
 def manage_users():
-    return render_template("manage_users.html")
+    from models.user import User
+    users = User.query.all()
+    return render_template("manage_users.html", users=users)
 
 @ui_bp.route("/register", methods=["GET", "POST"])
 def register():
