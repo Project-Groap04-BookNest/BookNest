@@ -1,11 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort
 from models.user import User
 from models import db # เอาไว้บันทึกลง DB 
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from functools import wraps
-from flask import abort # เอาไว้แสดง error 403
-from flask import session 
+from flask import session
 #ตัว hash password ของ flak สำหรับ reg
 
 ui_bp = Blueprint("ui", __name__)  # ชื่อ blueprint  มันจะไป map กับตัว html 
@@ -70,7 +69,6 @@ def admin_required(f):
 @ui_bp.route("/manage_users", methods=["GET", "POST"])
 @admin_required
 def manage_users():
-    from models.user import User
     users = User.query.all()
 
     if request.method == "POST":
@@ -79,11 +77,17 @@ def manage_users():
 
         user = User.query.get(user_id)
         if user:
-            user.role = new_role
-            db.session.commit()
+            if new_role in ["user", "stock_keeper", "admin"]:
+                user.role = new_role
+                db.session.commit()
+                flash(f"Role ของ {user.email} ถูกเปลี่ยนเป็น {new_role}", "success")
+            else:
+                flash("Role ไม่ถูกต้อง", "error")
+        else:
+            flash("User ไม่พบ", "error")
 
         return redirect(url_for("ui.manage_users"))
-    
+
     return render_template("manage_users.html", users=users)
 
 @ui_bp.route("/register", methods=["GET", "POST"])
@@ -114,3 +118,6 @@ def register():
         return redirect(url_for("ui.index"))
 
     return render_template("register.html")
+
+
+    
