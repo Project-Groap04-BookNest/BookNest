@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort
 from models.user import User
 from models import db # เอาไว้บันทึกลง DB 
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
+from functools import wraps
 from flask import session
 #ตัว hash password ของ flak สำหรับ reg
 
@@ -26,6 +27,7 @@ def login():
             session["user_id"] = user.id
             session["user_name"] = user.name
             session["user_role"] = user.role
+            session["user_email"] = user.email
             return redirect(url_for("ui.index"))
         else:
             return render_template("login.html", error="Email หรือ Password ไม่ถูกต้อง")
@@ -49,10 +51,43 @@ def manage_books():
     books = Book.query.all()
     return render_template("manage_books.html", books=books)
 
-@ui_bp.route("/manage_users")
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # ต้อง login ก่อน
+        if "user_id" not in session:
+            return abort(403)
+
+        # ต้องเป็น admin
+        if session.get("user_role") != "admin" or session.get("user_email") != "admin@example.com":
+            return abort(403)
+
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+@ui_bp.route("/manage_users", methods=["GET", "POST"])
+@admin_required
 def manage_users():
-    from models.user import User
     users = User.query.all()
+
+    if request.method == "POST":
+        user_id = request.form.get("user_id")
+        new_role = request.form.get("role")
+
+        user = User.query.get(user_id)
+        if user:
+            if new_role in ["user", "stock_keeper", "admin"]:
+                user.role = new_role
+                db.session.commit()
+                flash(f"Role ของ {user.email} ถูกเปลี่ยนเป็น {new_role}", "success")
+            else:
+                flash("Role ไม่ถูกต้อง", "error")
+        else:
+            flash("User ไม่พบ", "error")
+
+        return redirect(url_for("ui.manage_users"))
+
     return render_template("manage_users.html", users=users)
 
 @ui_bp.route("/register", methods=["GET", "POST"])
@@ -83,3 +118,6 @@ def register():
         return redirect(url_for("ui.index"))
 
     return render_template("register.html")
+
+
+    

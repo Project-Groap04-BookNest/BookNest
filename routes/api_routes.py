@@ -48,7 +48,45 @@ def get_users():
         } for u in users
     ])
 
+@api_bp.route("/users/<int:user_id>/role", methods=["GET", "PUT"]) # ex /users/1/role
+def user_role(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
 
+    if request.method == "GET":
+        # คืนค่า role ของ user
+        return jsonify({
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role
+        })
+
+    elif request.method == "PUT":
+        # อัปเดต role
+        data = request.get_json()
+        new_role = data.get("role")
+
+        if not new_role:
+            return jsonify({"error": "Missing 'role' in request body"}), 400
+
+        allowed_roles = ["user", "stock_keeper", "admin"]
+        if new_role not in allowed_roles:
+            return jsonify({"error": f"Invalid role. Allowed: {allowed_roles}"}), 400
+
+        user.role = new_role
+        db.session.commit()
+
+        return jsonify({
+            "message": "Role updated successfully",
+            "user": {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "role": user.role
+            }
+        })
 
 
 # api get_cart
@@ -146,11 +184,6 @@ def checkout():
 
     session["cart"] = {}
     session.modified = True
+
     return jsonify({"message": "Checkout successful", "order_id": order.id})
-
-
-    
-
-
-
 
