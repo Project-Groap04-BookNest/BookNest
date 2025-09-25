@@ -67,11 +67,23 @@ def admin_required(f):
     return decorated_function
 
 
-@ui_bp.route("/manage_users")
+@ui_bp.route("/manage_users", methods=["GET", "POST"])
 @admin_required
 def manage_users():
     from models.user import User
     users = User.query.all()
+
+    if request.method == "POST":
+        user_id = request.form.get("user_id")
+        new_role = request.form.get("role")
+
+        user = User.query.get(user_id)
+        if user:
+            user.role = new_role
+            db.session.commit()
+
+        return redirect(url_for("ui.manage_users"))
+    
     return render_template("manage_users.html", users=users)
 
 @ui_bp.route("/register", methods=["GET", "POST"])

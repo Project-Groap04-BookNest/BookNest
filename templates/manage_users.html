@@ -10,6 +10,7 @@
         <th class="py-2">Name</th>
         <th class="py-2">Email</th>
         <th class="py-2">Role</th>
+        <th class="py-2">Action</th>
       </tr>
     </thead>
     <tbody id="users-body"></tbody>
@@ -40,7 +41,19 @@ async function loadUsers() {
         <td class="py-2">${u.id}</td>
         <td class="py-2">${u.name}</td>
         <td class="py-2">${u.email}</td>
-        <td class="py-2">${u.role}</td>
+        <td class="py-2">
+          <select id="role-${u.id}" class="border rounded px-2 py-1">
+            <option value="user" ${u.role === "user" ? "selected" : ""}>User</option>
+            <option value="stock_keeper" ${u.role === "stock_keeper" ? "selected" : ""}>Stock Keeper</option>
+            <option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin</option>
+          </select>
+        </td>
+        <td class="py-2">
+          <button onclick="updateRole(${u.id})"
+                  class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
+            Update
+          </button>
+        </td>
       `;
       tbody.appendChild(tr);
     });
@@ -48,6 +61,32 @@ async function loadUsers() {
     err.textContent = 'Cannot load users: ' + e.message;
   }
 }
+
+async function updateRole(userId) {
+  const newRole = document.getElementById('role-' + userId).value;
+  const err = document.getElementById('err');
+  err.textContent = '';
+
+  try {
+    const res = await fetch(`/api/users/${userId}/role`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: newRole })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      err.textContent = data.error || ('HTTP ' + res.status);
+      return;
+    }
+
+    // reload users table
+    await loadUsers();
+  } catch (e) {
+    err.textContent = 'Update failed: ' + e.message;
+  }
+}
+
 loadUsers();
 </script>
 {% endblock %}
