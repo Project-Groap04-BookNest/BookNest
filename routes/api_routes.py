@@ -2,7 +2,14 @@ from flask import Blueprint, jsonify, request, session
 from models.book import Book
 from models.order import Order
 from models.order_item import OrderItem
-from app import db   
+from models.book import Book
+from models.user import User
+from app import db
+from importlib.metadata import requires   
+
+
+
+
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -12,11 +19,13 @@ def require_login():
         return False
     return True
 
+#api get_book
 @api_bp.route("/get_books", methods=["GET"])
 def get_books():
     if not require_login():
         return jsonify({"error": "Please login first"}), 401
     books = Book.query.all()
+
     return jsonify([{
         "id": b.id,
         "title": b.title,
@@ -25,6 +34,27 @@ def get_books():
         "stock_quantity": b.stock_quantity
     } for b in books])
 
+
+
+
+### api get_users
+@api_bp.route("/get_users", methods=["GET"])
+def get_users():
+    users = User.query.all()
+    return jsonify([
+        {
+            "id": u.id,
+            "name": u.name,
+            "email": u.email,
+            "role": u.role
+
+        } for u in users
+    ])
+
+
+
+
+# api get_cart
 @api_bp.route("/cart", methods=["GET"])
 def get_cart():
     cart = session.get("cart", {})
@@ -57,6 +87,7 @@ def add_to_cart():
     session.modified = True
     return jsonify({"message": "Added to cart", "cart": cart})
 
+
 @api_bp.route("/cart/<book_id>", methods=["PUT"])
 def update_cart_item(book_id):
     if not require_login():
@@ -73,6 +104,7 @@ def update_cart_item(book_id):
     session.modified = True
     return jsonify({"message": "Updated cart", "cart": cart})
 
+
 @api_bp.route("/cart/<book_id>", methods=["DELETE"])
 def delete_cart_item(book_id):
     if not require_login():
@@ -83,6 +115,10 @@ def delete_cart_item(book_id):
     session["cart"] = cart
     session.modified = True
     return jsonify({"message": "Item removed", "cart": cart})
+
+
+
+## api checkout 
 
 @api_bp.route("/checkout", methods=["POST"])
 def checkout():
@@ -114,4 +150,10 @@ def checkout():
     session["cart"] = {}
     session.modified = True
     return jsonify({"message": "Checkout successful", "order_id": order.id})
+
+
+    
+
+
+
 
