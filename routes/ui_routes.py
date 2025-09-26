@@ -1,3 +1,4 @@
+
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort
 from models.user import User
 from models import db # เอาไว้บันทึกลง DB 
@@ -6,6 +7,8 @@ from werkzeug.security import check_password_hash
 from functools import wraps
 from flask import session
 #ตัว hash password ของ flak สำหรับ reg
+import os
+from flask import current_app
 
 ui_bp = Blueprint("ui", __name__)  # ชื่อ blueprint  มันจะไป map กับตัว html 
 
@@ -45,10 +48,25 @@ def logout():
 def orders():
     return render_template("orders.html")
 
-import os
-from flask import current_app
 
+# Decorator จัดการหน้า manage_books ให้ role เป็น stock_keeper or admin
+def stock_keeper_or_admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # ต้อง login ก่อน
+        if "user_id" not in session:
+            return abort(403)
+
+        # ต้องเป็น admin หรือ stock_keeper
+        if session.get("user_role") not in ["admin", "stock_keeper"]:
+            return abort(403)
+
+        return f(*args, **kwargs)
+    return decorated_function
+
+#mange_books page 
 @ui_bp.route("/manage_books")
+@stock_keeper_or_admin_required
 def manage_books():
     from models.book import Book
     books = Book.query.all()
