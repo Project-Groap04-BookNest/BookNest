@@ -65,22 +65,62 @@ def stock_keeper_or_admin_required(f):
     return decorated_function
 
 #mange_books page 
-@ui_bp.route("/manage_books")
+@ui_bp.route("/manage_books", methods=["GET", "POST"])
 @stock_keeper_or_admin_required
 def manage_books():
     from models.book import Book
+    if request.method == "POST":
+        action = request.form.get("action")
+        book_id = request.form.get("book_id")
+        if action == "add":
+            title = request.form.get("title")
+            author = request.form.get("author")
+            price = request.form.get("price")
+            stock_quantity = request.form.get("stock_quantity")
+            image_path = request.form.get("image_path") or "assets/if_book_error.png"
+            if title and author and price and stock_quantity:
+                new_book = Book(title=title, author=author, price=price, stock_quantity=stock_quantity, image_path=image_path)
+                db.session.add(new_book)
+                db.session.commit()
+                flash("เพิ่มหนังสือสำเร็จ", "success")
+        elif action == "delete" and book_id:
+            book = Book.query.get(book_id)
+            if book:
+                db.session.delete(book)
+                db.session.commit()
+                flash("ลบหนังสือสำเร็จ", "success")
+        elif action == "edit" and book_id:
+            book = Book.query.get(book_id)
+            if book:
+                book.title = request.form.get("title", book.title)
+                book.author = request.form.get("author", book.author)
+                book.price = request.form.get("price", book.price)
+                book.stock_quantity = request.form.get("stock_quantity", book.stock_quantity)
+                book.image_path = request.form.get("image_path", book.image_path)
+                db.session.commit()
+                flash("แก้ไขข้อมูลหนังสือสำเร็จ", "success")
+        elif action == "increase_stock" and book_id:
+            book = Book.query.get(book_id)
+            if book:
+                book.stock_quantity += 1
+                db.session.commit()
+        elif action == "decrease_stock" and book_id:
+            book = Book.query.get(book_id)
+            if book and book.stock_quantity > 0:
+                book.stock_quantity -= 1
+                db.session.commit()
+        return redirect(url_for("ui.manage_books"))
+
     books = Book.query.all()
     
     # ตรวจสอบและแก้ไข image_path
     for book in books:
-        if not book.image_path:  # ถ้าไม่มี path
+        if not book.image_path:
             book.image_path = "assets/if_book_error.png"
         else:
-            # ตรวจสอบว่าไฟล์มีอยู่จริงไหม
             full_path = os.path.join(current_app.static_folder, book.image_path)
             if not os.path.exists(full_path):
                 book.image_path = "assets/if_book_error.png"
-    
     return render_template("manage_books.html", books=books)
 
 def admin_required(f):
