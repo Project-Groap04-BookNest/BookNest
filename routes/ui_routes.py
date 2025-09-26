@@ -1,3 +1,4 @@
+
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort
 from models.user import User
 from models import db # เอาไว้บันทึกลง DB 
@@ -6,6 +7,8 @@ from werkzeug.security import check_password_hash
 from functools import wraps
 from flask import session
 #ตัว hash password ของ flak สำหรับ reg
+import os
+from flask import current_app
 
 ui_bp = Blueprint("ui", __name__)  # ชื่อ blueprint  มันจะไป map กับตัว html 
 
@@ -45,11 +48,102 @@ def logout():
 def orders():
     return render_template("orders.html")
 
-@ui_bp.route("/manage_books")
+
+# Decorator จัดการหน้า manage_books ให้ role เป็น stock_keeper or admin
+def stock_keeper_or_admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # ต้อง login ก่อน
+        if "user_id" not in session:
+            return abort(403)
+
+        # ต้องเป็น admin หรือ stock_keeper
+        if session.get("user_role") not in ["admin", "stock_keeper"]:
+            return abort(403)
+
+        return f(*args, **kwargs)
+    return decorated_function
+
+#mange_books page 
+@ui_bp.route("/manage_books", methods=["GET", "POST"])
+@stock_keeper_or_admin_required
 def manage_books():
     from models.book import Book
-    books = Book.query.all()
-    return render_template("manage_books.html", books=books)
+    from models.book_categories import BookCategory
+    if request.method == "POST":
+        action = request.form.get("action")
+        book_id = request.form.get("book_id")
+        if action == "add":
+            title = request.form.get("title")
+            author = request.form.get("author")
+            price = request.form.get("price")
+            stock_quantity = request.form.get("stock_quantity")
+            image_path = request.form.get("image_path") or "assets/if_book_error.png"
+            category_id = request.form.get("category_id")
+            new_category_name = request.form.get("new_category")
+            # handle category
+            if new_category_name:
+                category = BookCategory.query.filter_by(name=new_category_name).first()
+                if not category:
+                    category = BookCategory(name=new_category_name)
+                    db.session.add(category)
+                    db.session.commit()
+                category_id = category.id
+            if title and author and price and stock_quantity and category_id:
+                new_book = Book(title=title, author=author, price=price, stock_quantity=stock_quantity, image_path=image_path, category_id=category_id)
+                db.session.add(new_book)
+                db.session.commit()
+                flash("เพิ่มหนังสือสำเร็จ", "success")
+        elif action == "delete" and book_id:
+            book = Book.query.get(book_id)
+            if book:
+                db.session.delete(book)
+                db.session.commit()
+                flash("ลบหนังสือสำเร็จ", "success")
+        elif action == "edit" and book_id:
+            book = Book.query.get(book_id)
+            if book:
+                book.title = request.form.get("title", book.title)
+                book.author = request.form.get("author", book.author)
+                book.price = request.form.get("price", book.price)
+                book.stock_quantity = request.form.get("stock_quantity", book.stock_quantity)
+                book.image_path = request.form.get("image_path", book.image_path)
+                category_id = request.form.get("category_id")
+                new_category_name = request.form.get("new_category")
+                if new_category_name:
+                    category = BookCategory.query.filter_by(name=new_category_name).first()
+                    if not category:
+                        category = BookCategory(name=new_category_name)
+                        db.session.add(category)
+                        db.session.commit()
+                    category_id = category.id
+                if category_id:
+                    book.category_id = category_id
+                db.session.commit()
+                flash("แก้ไขข้อมูลหนังสือสำเร็จ", "success")
+        elif action == "increase_stock" and book_id:
+            book = Book.query.get(book_id)
+            if book:
+                book.stock_quantity += 1
+                db.session.commit()
+        elif action == "decrease_stock" and book_id:
+            book = Book.query.get(book_id)
+            if book and book.stock_quantity > 0:
+                book.stock_quantity -= 1
+                db.session.commit()
+        return redirect(url_for("ui.manage_books"))
+
+    books = Book.query.order_by(Book.id.asc()).all()
+    categories = BookCategory.query.order_by(BookCategory.name).all()
+    # ตรวจสอบและแก้ไข image_path
+    for book in books:
+        if not book.image_path:
+            book.image_path = "assets/if_book_error.png"
+        else:
+            full_path = os.path.join(current_app.static_folder, book.image_path)
+            if not os.path.exists(full_path):
+                book.image_path = "assets/if_book_error.png"
+    return render_template("manage_books.html", books=books, categories=categories)
 
 def admin_required(f):
     @wraps(f)

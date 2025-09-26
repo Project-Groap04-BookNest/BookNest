@@ -28,9 +28,76 @@ def get_books():
         "title": b.title,
         "author": b.author,
         "price": str(b.price),
-        "stock_quantity": b.stock_quantity
+        "stock_quantity": b.stock_quantity,
+        "image_path": b.image_path if b.image_path else "assets/if_book_error.png"
     } for b in books])
 
+# เพิ่ม/ลดจำนวนหนังสือ (stock)
+@api_bp.route("/books/<int:book_id>/stock", methods=["POST"])
+def update_book_stock(book_id):
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
+    data = request.get_json()
+    action = data.get("action")  # 'increase' or 'decrease'
+    book = Book.query.get(book_id)
+    if not book:
+        return jsonify({"error": "Book not found"}), 404
+    if action == "increase":
+        book.stock_quantity += 1
+    elif action == "decrease":
+        if book.stock_quantity > 0:
+            book.stock_quantity -= 1
+    else:
+        return jsonify({"error": "Invalid action"}), 400
+    db.session.commit()
+    return jsonify({"message": "Stock updated", "stock_quantity": book.stock_quantity})
+
+# ลบหนังสือ
+@api_bp.route("/books/<int:book_id>", methods=["DELETE"])
+def delete_book(book_id):
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
+    book = Book.query.get(book_id)
+    if not book:
+        return jsonify({"error": "Book not found"}), 404
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify({"message": "Book deleted"})
+
+# แก้ไขข้อมูลหนังสือ
+@api_bp.route("/books/<int:book_id>", methods=["PUT"])
+def edit_book(book_id):
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
+    book = Book.query.get(book_id)
+    if not book:
+        return jsonify({"error": "Book not found"}), 404
+    data = request.get_json()
+    book.title = data.get("title", book.title)
+    book.author = data.get("author", book.author)
+    book.price = data.get("price", book.price)
+    book.stock_quantity = data.get("stock_quantity", book.stock_quantity)
+    book.image_path = data.get("image_path", book.image_path)
+    db.session.commit()
+    return jsonify({"message": "Book updated"})
+
+# เพิ่มหนังสือใหม่
+@api_bp.route("/books", methods=["POST"])
+def add_book():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
+    data = request.get_json()
+    title = data.get("title")
+    author = data.get("author")
+    price = data.get("price")
+    stock_quantity = data.get("stock_quantity")
+    image_path = data.get("image_path", "assets/if_book_error.png")
+    if not all([title, author, price, stock_quantity]):
+        return jsonify({"error": "Missing required fields"}), 400
+    book = Book(title=title, author=author, price=price, stock_quantity=stock_quantity, image_path=image_path)
+    db.session.add(book)
+    db.session.commit()
+    return jsonify({"message": "Book added", "book_id": book.id})
 
 
 
