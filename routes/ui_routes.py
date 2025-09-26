@@ -111,7 +111,7 @@ def manage_books():
                 db.session.commit()
         return redirect(url_for("ui.manage_books"))
 
-    books = Book.query.all()
+    books = Book.query.order_by(Book.id.desc()).all()
     
     # ตรวจสอบและแก้ไข image_path
     for book in books:
