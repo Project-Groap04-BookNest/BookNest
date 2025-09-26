@@ -119,5 +119,7 @@ def register():
 
     return render_template("register.html")
 
-
-    
+# จัดการ error 403
+@ui_bp.app_errorhandler(403)
+def forbidden(e):
+    return render_template("404.html"), 403
