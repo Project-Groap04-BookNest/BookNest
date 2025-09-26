@@ -1,5 +1,5 @@
 # routes/ui_routes.py
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort, current_app, jsonify
 from functools import wraps
 import os
 
@@ -67,6 +67,11 @@ def _safe_image_path(image_path: str | None) -> str:
 # ========================
 # Public pages
 # ========================
+def require_login():
+    if "user_id" not in session:
+        return False
+    return True
+
 @ui_bp.route("/")
 def index():
     import re
@@ -129,6 +134,8 @@ def index():
 
 @ui_bp.route("/orders")     # endpoint: ui.orders
 def orders():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     items, total = _cart_items_and_total()
     return render_template("orders.html", items=items, total=total)
 
@@ -137,6 +144,8 @@ def orders():
 # ========================
 @ui_bp.route("/add-to-cart/<int:book_id>")
 def add_to_cart(book_id):
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     cart = session.get("cart", {})
     cart[str(book_id)] = cart.get(str(book_id), 0) + 1
     session["cart"] = cart
@@ -145,6 +154,8 @@ def add_to_cart(book_id):
 
 @ui_bp.route("/update-qty/<int:book_id>/<int:qty>")
 def update_qty(book_id, qty):
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     cart = session.get("cart", {})
     key = str(book_id)
     if key in cart:
@@ -158,6 +169,8 @@ def update_qty(book_id, qty):
 
 @ui_bp.route("/remove-item/<int:book_id>")
 def remove_item(book_id):
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     cart = session.get("cart", {})
     key = str(book_id)
     if key in cart:
@@ -168,6 +181,8 @@ def remove_item(book_id):
 
 @ui_bp.route("/checkout")
 def checkout():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     cart = session.get("cart", {})
     if not cart:
         return redirect(url_for("ui.orders"))
@@ -202,6 +217,8 @@ def checkout():
 # ========================
 @ui_bp.route("/login", methods=["GET", "POST"])
 def login():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
@@ -222,11 +239,15 @@ def login():
 
 @ui_bp.route("/logout")
 def logout():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     session.clear()
     return redirect(url_for("ui.index"))
 
 @ui_bp.route("/register", methods=["GET", "POST"])
 def register():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     if request.method == "POST":
         name = request.form.get("name")
         email = request.form.get("email")
@@ -255,6 +276,8 @@ def register():
 @ui_bp.route("/manage_books", methods=["GET", "POST"])
 @stock_keeper_or_admin_required
 def manage_books():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     from models.book_categories import BookCategory
     if request.method == "POST":
         action = request.form.get("action")
@@ -343,6 +366,8 @@ def manage_books():
 @ui_bp.route("/manage_users", methods=["GET", "POST"])
 @admin_required
 def manage_users():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
     users = User.query.all()
 
     if request.method == "POST":
