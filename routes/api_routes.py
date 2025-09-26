@@ -253,4 +253,3 @@ def checkout():
     session.modified = True
 
     return jsonify({"message": "Checkout successful", "order_id": order.id})
-
