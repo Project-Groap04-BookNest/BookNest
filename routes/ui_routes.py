@@ -45,10 +45,24 @@ def logout():
 def orders():
     return render_template("orders.html")
 
+import os
+from flask import current_app
+
 @ui_bp.route("/manage_books")
 def manage_books():
     from models.book import Book
     books = Book.query.all()
+    
+    # ตรวจสอบและแก้ไข image_path
+    for book in books:
+        if not book.image_path:  # ถ้าไม่มี path
+            book.image_path = "assets/if_book_error.png"
+        else:
+            # ตรวจสอบว่าไฟล์มีอยู่จริงไหม
+            full_path = os.path.join(current_app.static_folder, book.image_path)
+            if not os.path.exists(full_path):
+                book.image_path = "assets/if_book_error.png"
+    
     return render_template("manage_books.html", books=books)
 
 def admin_required(f):

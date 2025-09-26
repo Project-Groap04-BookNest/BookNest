@@ -9,11 +9,7 @@
     {% for book in books %}
       <div class="bg-gray-800 rounded-xl p-3 flex flex-col">
 
-        <img src="{% if book.image_path and book.image_path.startswith('http') %}
-                     {{ book.image_path }}
-                   {% else %}
-                     {{ url_for('static', filename=book.image_path or 'assets/mock-book01.svg') }}
-                   {% endif %}"
+        <img src="{{ url_for('static', filename=book.image_path) }}"
              alt="{{ book.title }}"
              class="rounded-lg mb-3">
 

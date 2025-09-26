@@ -28,7 +28,8 @@ def get_books():
         "title": b.title,
         "author": b.author,
         "price": str(b.price),
-        "stock_quantity": b.stock_quantity
+        "stock_quantity": b.stock_quantity,
+        "image_path": b.image_path if b.image_path else "assets/if_book_error.png"
     } for b in books])
 
 
