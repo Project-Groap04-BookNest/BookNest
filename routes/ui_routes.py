@@ -10,6 +10,9 @@ from models.book import Book
 from models.order import Order
 from models.order_item import OrderItem
 
+from urllib.parse import urlparse
+from flask import request
+
 ui_bp = Blueprint("ui", __name__)
 
 # ========================
@@ -159,7 +162,19 @@ def add_to_cart(book_id):
     cart[str(book_id)] = cart.get(str(book_id), 0) + 1
     session["cart"] = cart
     session.modified = True
-    return redirect(url_for("ui.orders"))
+        # แจ้งเตือนเล็ก ๆ (ถ้า base.html มี flash)
+    # flash("เพิ่มสินค้าลงตะกร้าแล้ว", "success")
+
+    # กลับไปหน้าที่มาก่อน (referrer) ถ้าไม่มี ให้กลับ / (index)
+    ref = request.args.get("next") or request.referrer
+    # กันไว้ถ้า referrer เป็นโดเมนอื่น
+    if ref:
+        u = urlparse(ref)
+        if not u.netloc or u.netloc == request.host:
+            return redirect(ref)
+
+    return redirect(url_for("ui.index"))
+
 
 @ui_bp.route("/update-qty/<int:book_id>/<int:qty>")
 def update_qty(book_id, qty):
@@ -251,7 +266,7 @@ def login():
 def logout():
     check = require_login_or_redirect()
     if check is not True:  # ถ้าไม่ได้ล็อกอินจะ return redirect
-        return check1
+        return check
     session.clear()
     return redirect(url_for("ui.index"))
 
