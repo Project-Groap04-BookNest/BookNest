@@ -185,7 +185,7 @@ def checkout():
                 order=order,
                 book_id=book.id,
                 quantity=qty,
-                price=book.price
+                unit_price=book.price
             ))
             book.stock_quantity -= qty
             total += subtotal
