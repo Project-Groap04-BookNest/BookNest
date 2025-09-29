@@ -1,3 +1,4 @@
+
 from flask import Blueprint, jsonify, request, session
 from models.book import Book
 from models.order import Order
@@ -253,3 +254,30 @@ def checkout():
     session.modified = True
 
     return jsonify({"message": "Checkout successful", "order_id": order.id})
+
+
+# API: get order items (ใครซื้ออะไร เวลาไหน)
+@api_bp.route("/get_order_items", methods=["GET"])
+def get_order_items():
+    if not require_login():
+        return jsonify({"error": "Please login first"}), 401
+    items = OrderItem.query.order_by(OrderItem.created_at.desc()).all()
+    result = []
+    for item in items:
+        order = item.order
+        user = order.user if order else None
+        book = item.book
+        result.append({
+            "order_item_id": item.id,
+            "order_id": order.id if order else None,
+            "user_id": user.id if user else None,
+            "user_name": user.name if user else None,
+            "book_id": book.id if book else None,
+            "book_title": book.title if book else None,
+            "quantity": item.quantity,
+            "unit_price": str(item.unit_price),
+            "created_at": item.created_at.isoformat() if item.created_at else None,
+            "order_status": str(order.status.value) if order and order.status else None,
+            "order_created_at": order.created_at.isoformat() if order and order.created_at else None
+        })
+    return jsonify(result)
