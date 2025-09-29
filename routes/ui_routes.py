@@ -219,7 +219,7 @@ def checkout():
     if not cart:
         return redirect(url_for("ui.orders"))
 
-    order = Order(total_amount=0)
+    order = Order(total_amount=0, user_id=session["user_id"])
     db.session.add(order)
     total = 0
 
