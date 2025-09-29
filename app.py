@@ -1,29 +1,47 @@
-from flask import Flask ,render_template , request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-import os 
+from flask import Flask
+from models import db
+from config import Config
+from dotenv import load_dotenv
+# import blueprints ตัว front-end มา 
+from routes.ui_routes import ui_bp
+# import routes.api_routes
+from routes.api_routes import api_bp
+# โหลด .env ที่นี่ (ก่อนใช้ Config)
+load_dotenv()
+
+#end-point ของตัวเว็บ 
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    
+    # ตั้ง secret key (ใช้สำหรับ session, flash message)
+    app.secret_key = "my_booknest_secret"  # หรือไปอ่านจาก .env ก็ได้
+    
+    
+        # init DB
+    db.init_app(app)
+    
+     # register blueprints เอาข้อมูล router เข้ามา
+    app.register_blueprint(ui_bp)
+    
+    #register api เอาข้อมูล api เข้ามา 
+    app.register_blueprint(api_bp)
 
 
-app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@localhost:5432/{os.getenv('POSTGRES_DB')}"
-
-@app.route('/')
-def index():
-    return render_template('index.html')
+    return app
 
 
-@app.route('/login')
-def login():
-     if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-        # เช็คจาก database / session
-        return redirect(url_for("index"))
-     return render_template('login.html')
- 
-@app.route('/orders')
-def orders():
-    return render_template("orders.html")
-
-if __name__ == '__main__':
+# ระบบ debug ของ flask
+if __name__ == "__main__":
+    app = create_app()
+    app.secret_key = "my_booknest_secret"
+    
+    
+     # 👇 reset database
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+        
+        
     app.run(debug=True)

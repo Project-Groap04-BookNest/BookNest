@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-10 bg-white rounded-2xl p-8 shadow-lg">
+  <h2 class="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+    <span class="material-icons text-blue-500">groups</span>
+    Manage Users
+  </h2>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-6 space-y-2">
+        {% for category, msg in messages %}
+          <div class="px-4 py-3 rounded-lg font-medium text-white shadow-md
+              {% if category=='success' %}bg-green-500
+              {% elif category=='error' %}bg-red-500{% endif %}">
+            {{ msg }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="overflow-hidden border border-gray-200 rounded-xl shadow-sm">
+    <table class="w-full text-left border-collapse">
+      <thead class="bg-gray-50 border-b">
+        <tr>
+          <th class="py-3 px-4 text-sm font-semibold text-gray-700">ID</th>
+          <th class="py-3 px-4 text-sm font-semibold text-gray-700">Name</th>
+          <th class="py-3 px-4 text-sm font-semibold text-gray-700">Email</th>
+          <th class="py-3 px-4 text-sm font-semibold text-gray-700">Role</th>
+          <th class="py-3 px-4 text-sm font-semibold text-gray-700">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for user in users %}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="py-3 px-4 text-gray-600">{{ user.id }}</td>
+          <td class="py-3 px-4 font-medium text-gray-800">{{ user.name }}</td>
+          <td class="py-3 px-4 text-gray-600">{{ user.email }}</td>
+          <td class="py-3 px-4 text-gray-600 capitalize">
+            {{ (user.role or 'user').replace('_', ' ') }}
+          </td>
+          <td class="py-3 px-4">
+            <form action="{{ url_for('ui.manage_users') }}" method="POST" class="flex gap-3 items-center">
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <select name="role" class="border rounded-lg px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-blue-400">
+                <option value="user" {% if (user.role or 'user')=='user' %}selected{% endif %}>User</option>
+                <option value="stock_keeper" {% if (user.role or '')=='stock_keeper' %}selected{% endif %}>Stock Keeper</option>
+                <option value="admin" {% if (user.role or '')=='admin' %}selected{% endif %}>Admin</option>
+              </select>
+              <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">
+                Update
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

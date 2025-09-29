@@ -1,8 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="index container">
-    <h1 class="text-2xl font-bold mb-4">Welcome to BookNest</h1>
-    <p class="mb-4">
-        BookNest is your go-to platform for discovering and ordering books online. Explore our collection and find your next read!
-    </p>
-    {% endblock %}">
+  <h1 class="text-2xl font-bold mb-4 text-neutral-200">Welcome to BookNest</h1>
+
+  <!-- วนทีละหมวด -->
+  {% if grouped_categories and grouped_categories|length > 0 %}
+    {% for cat in grouped_categories %}
+      <section class="max-w-5xl mx-auto mt-10 text-neutral-200">
+        <h2 class="text-xl font-bold mb-4 capitalize">{{ cat.name }}</h2>
+
+        <div class="bg-neutral-800 p-6 rounded-lg shadow-lg">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {% for book in cat.books %}
+            <div class="rounded-lg shadow-md p-4 flex flex-col items-center">
+              <img src="{{ url_for('static', filename=book.image_path or 'assets/if_book_error.png') }}" 
+                   alt="{{ book.title }}" class="w-32 h-40 object-cover mb-4 rounded">
+              <h3 class="font-semibold text-lg mb-2 text-center">{{ book.title }}</h3>
+              <p class="mb-3 text-center opacity-80">{{ book.author }}</p>
+              <span class="font-bold mb-3">฿{{ book.price }}</span>
+              <a href="{{ url_for('ui.add_to_cart', book_id=book.id, next='/' ) }}"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full">
+                Add to Cart
+            </a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    {% endfor %}
+  {% else %}
+    <section class="max-w-5xl mx-auto mt-8 text-neutral-200 bg-neutral-800 p-6 rounded-lg shadow-lg">
+      <p class="text-neutral-300">ยังไม่มีหนังสือในระบบ</p>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}
