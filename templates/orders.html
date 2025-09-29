@@ -7,7 +7,7 @@
       {% if items %}
         {% for item in items %}
         <div class="flex items-start mb-5">
-          <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="book" class="object-cover mx-2 w-16 h-20"/>
+          <img src="{{ url_for('static', filename=item.image_path if item.image_path else 'assets/if_book_error.png') }}" alt="book" class="object-cover mx-2 w-16 h-20"/>
           <div class="flex flex-col">
             <p class="my-1">{{ item.title }}</p>
             <p class="my-1">฿{{ item.price }}</p>

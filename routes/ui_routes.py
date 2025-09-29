@@ -49,12 +49,17 @@ def _cart_items_and_total():
         if not book:
             continue
         subtotal = book.price * qty
+        # ตรวจสอบรูป
+        img_path = book.image_path if book.image_path else "assets/if_book_error.png"
+        full = os.path.join(current_app.static_folder, img_path)
+        img_path = img_path if os.path.exists(full) else "assets/if_book_error.png"
         items.append({
             "id": book.id,
             "title": book.title,
             "price": book.price,
             "quantity": qty,
-            "subtotal": subtotal
+            "subtotal": subtotal,
+            "image_path": img_path
         })
         total += subtotal
     return items, total
