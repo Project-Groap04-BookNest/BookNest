@@ -2,98 +2,53 @@
 {% block content %}
 <main class="bg-gray-300 rounded-2xl p-5 mt-5">
   <div class="flex flex-wrap gap-10">
-    
-    <!-- Cart Items -->
     <section class="flex-1 min-w-[300px]">
       <h2 class="mb-4 border-b border-gray-500 pb-2 text-xl font-bold">ตะกร้าสินค้า</h2>
-
-      <div id="cart-items"></div>
-    </section>
-
-    <!-- Summary -->
-    <section class="flex-1 min-w-[300px]">
-      <h2 class="mb-4 border-b border-gray-500 pb-2 text-xl font-bold">สรุปคำสั่งซื้อ</h2>
-      <div id="cart-summary"></div>
-
-      <div class="flex justify-between mt-6">
-        <a href="/" class="px-5 py-2 rounded-full bg-gray-700 text-white font-bold">ไปหน้าแรก</a>
-        <button onclick="checkout()" class="px-5 py-2 rounded-full bg-blue-500 text-white font-bold">สั่งซื้อ ➤</button>
-      </div>
-    </section>
-
-  </div>
-</main>
-
-<script>
-async function loadCart() {
-  const res = await fetch("/api/cart");
-  const data = await res.json();
-
-  let itemsHtml = "";
-  data.items.forEach(item => {
-    itemsHtml += `
-      <div class="flex items-start mb-5">
-        <input type="checkbox" class="mt-2" />
-        <img src="/static/assets/mock-book01.svg" alt="book" class="object-cover mx-2 w-16 h-20"/>
-        <div class="flex flex-col">
-          <p class="my-1">${item.title}</p>
-          <p class="my-1">฿${item.price}</p>
-          <div class="flex items-center gap-2 mt-2">
-            <span>จำนวน</span>
-            <button onclick="updateQty(${item.id}, ${item.quantity - 1})" class="px-3 py-1 bg-black text-white rounded">-</button>
-            <span>${item.quantity}</span>
-            <button onclick="updateQty(${item.id}, ${item.quantity + 1})" class="px-3 py-1 bg-black text-white rounded">+</button>
-            <button onclick="removeItem(${item.id})" class="px-3 py-1 text-white rounded bg-red-600">
-              ลบ
-            </button>
+      {% if items %}
+        {% for item in items %}
+        <div class="flex items-start mb-5">
+          <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="book" class="object-cover mx-2 w-16 h-20"/>
+          <div class="flex flex-col">
+            <p class="my-1">{{ item.title }}</p>
+            <p class="my-1">฿{{ item.price }}</p>
+            <div class="flex items-center gap-2 mt-2">
+              <span>จำนวน</span>
+              <a href="{{ url_for('ui.update_qty', book_id=item.id, qty=item.quantity - 1) }}" class="px-3 py-1 bg-black text-white rounded">-</a>
+              <span>{{ item.quantity }}</span>
+              <a href="{{ url_for('ui.update_qty', book_id=item.id, qty=item.quantity + 1) }}" class="px-3 py-1 bg-black text-white rounded">+</a>
+              <a href="{{ url_for('ui.remove_item', book_id=item.id) }}" class="px-3 py-1 text-white rounded bg-red-600">ลบ</a>
+            </div>
           </div>
         </div>
-      </div>
-    `;
-  });
+        {% endfor %}
+      {% else %}
+        <p>ตะกร้ายังว่างอยู่</p>
+      {% endif %}
+    </section>
 
-  document.getElementById("cart-items").innerHTML = itemsHtml;
-
-  let summaryHtml = "";
-  data.items.forEach(item => {
-    summaryHtml += `
-      <div class="flex justify-between my-2">
-        <span>${item.title} x ${item.quantity}</span>
-        <span>฿${item.subtotal}</span>
-      </div>
-    `;
-  });
-  summaryHtml += `
-    <div class="flex justify-between mt-4 pt-3 border-t border-gray-500 font-bold">
-      <span>ราคารวม</span>
-      <span>฿${data.total}</span>
-    </div>
-  `;
-  document.getElementById("cart-summary").innerHTML = summaryHtml;
-}
-
-async function updateQty(bookId, qty) {
-  if (qty <= 0) return removeItem(bookId);
-  await fetch("/api/cart/" + bookId, {
-    method: "PUT",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({quantity: qty})
-  });
-  loadCart();
-}
-
-async function removeItem(bookId) {
-  await fetch("/api/cart/" + bookId, { method: "DELETE" });
-  loadCart();
-}
-
-async function checkout() {
-  const res = await fetch("/api/checkout", { method: "POST" });
-  const data = await res.json();
-  alert(data.message);
-  loadCart();
-}
-
-loadCart();
-</script>
+    <section class="flex-1 min-w-[300px]">
+      <h2 class="mb-4 border-b border-gray-500 pb-2 text-xl font-bold">สรุปคำสั่งซื้อ</h2>
+      {% if items %}
+        {% for item in items %}
+        <div class="flex justify-between my-2">
+          <span>{{ item.title }} x {{ item.quantity }}</span>
+          <span>฿{{ item.subtotal }}</span>
+        </div>
+        {% endfor %}
+        <div class="flex justify-between mt-4 pt-3 border-t border-gray-500 font-bold">
+          <span>ราคารวม</span>
+          <span>฿{{ total }}</span>
+        </div>
+        <div class="flex justify-between mt-6">
+          <a href="{{ url_for('ui.index') }}" class="px-5 py-2 rounded-full bg-gray-700 text-white font-bold">ไปหน้าแรก</a>
+          <a href="{{ url_for('ui.checkout') }}" class="px-5 py-2 rounded-full bg-blue-500 text-white font-bold">สั่งซื้อ ➤</a>
+        </div>
+      {% else %}
+        <div class="flex justify-between mt-6">
+          <a href="{{ url_for('ui.index') }}" class="px-5 py-2 rounded-full bg-gray-700 text-white font-bold">ไปหน้าแรก</a>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+</main>
 {% endblock %}

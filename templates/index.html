@@ -1,52 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="index container">
-    <h1 class="text-2xl font-bold mb-4 text-neutral-200">Welcome to BookNest</h1>
+  <h1 class="text-2xl font-bold mb-4 text-neutral-200">Welcome to BookNest</h1>
 
-    <section class="max-w-5xl mx-auto mt-8 text-neutral-200 bg-neutral-800 p-6 rounded-lg shadow-lg">
-        <h2 class="text-2xl font-bold mb-6 text-left">หนังสือแนะนำ</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            
-            <!-- Book Card 1 -->
+  <!-- วนทีละหมวด -->
+  {% if grouped_categories and grouped_categories|length > 0 %}
+    {% for cat in grouped_categories %}
+      <section class="max-w-5xl mx-auto mt-10 text-neutral-200">
+        <h2 class="text-xl font-bold mb-4 capitalize">{{ cat.name }}</h2>
+
+        <div class="bg-neutral-800 p-6 rounded-lg shadow-lg">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {% for book in cat.books %}
             <div class="rounded-lg shadow-md p-4 flex flex-col items-center">
-                <img src="{{ url_for('static', filename='assets/mock-book01.svg') }}" alt="Book 1" class="w-32 h-40 object-cover mb-4 rounded">
-                <h3 class="font-semibold text-lg mb-2">ชีวิตวุ่นวายของนายขี้ดินฯ</h3>
-                <p class="mb-4 text-center">ชีวิตของนายคนหนึ่งที่มีการอาการชอบม้าอย่างไม่หน้าเชื่อว่าจะเป็นไปได้</p>
-                <span class="font-bold mb-2">฿911</span>
-                <button onclick="addToCart(1)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full">Add to Cart</button>
+              <img src="{{ url_for('static', filename=book.image_path or 'assets/if_book_error.png') }}" 
+                   alt="{{ book.title }}" class="w-32 h-40 object-cover mb-4 rounded">
+              <h3 class="font-semibold text-lg mb-2 text-center">{{ book.title }}</h3>
+              <p class="mb-3 text-center opacity-80">{{ book.author }}</p>
+              <span class="font-bold mb-3">฿{{ book.price }}</span>
+              <a href="{{ url_for('ui.add_to_cart', book_id=book.id, next='/' ) }}"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full">
+                Add to Cart
+            </a>
             </div>
-
-            <!-- Book Card 2 -->
-            <div class="rounded-lg shadow-md p-4 flex flex-col items-center">
-                <img src="https://cdn-local.mebmarket.com/meb/server1/242691/Thumbnail/book_detail_large.gif?4" alt="Book 2" class="w-32 h-40 object-cover mb-4 rounded">
-                <h3 class="font-semibold text-lg mb-2">กําเนิดบาปทาโกปี้</h3>
-                <p class="mb-4 text-center">มนุษย์ต่างดาวจากดาวแฮปปี้เดินทางมาที่โลกมนุษย์เพื่อเผยแพร่ความสุข</p>
-                <span class="font-bold mb-2">฿120</span>
-                <button onclick="addToCart(2)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full">Add to Cart</button>
-            </div>
-
-            <!-- Book Card 3 -->
-            <div class="rounded-lg shadow-md p-4 flex flex-col items-center">
-                <img src="https://storage.naiin.com/system/application/bookstore/resource/product/202504/644800/1000281754_front_XXL.jpg?imgname=Dr.stone-%E0%B9%80%E0%B8%A5%E0%B9%88%E0%B8%A1-1-(New-Edition)" alt="Book 3" class="w-32 h-40 object-cover mb-4 rounded">
-                <h3 class="font-semibold text-lg mb-2">Dr.stone</h3>
-                <p class="mb-4 text-center">โชคไม่ใช่ส่วนหนึ่งของการทำงานของวิทยาศาสตร์</p>
-                <span class="font-bold mb-2">฿180</span>
-                <button onclick="addToCart(3)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full">Add to Cart</button>
-            </div>
-
+            {% endfor %}
+          </div>
         </div>
+      </section>
+    {% endfor %}
+  {% else %}
+    <section class="max-w-5xl mx-auto mt-8 text-neutral-200 bg-neutral-800 p-6 rounded-lg shadow-lg">
+      <p class="text-neutral-300">ยังไม่มีหนังสือในระบบ</p>
     </section>
+  {% endif %}
 </div>
-
-<script>
-async function addToCart(bookId) {
-    const res = await fetch("/api/cart", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ book_id: bookId, quantity: 1 })
-    });
-    const data = await res.json();
-    alert(data.message);
-}
-</script>
 {% endblock %}

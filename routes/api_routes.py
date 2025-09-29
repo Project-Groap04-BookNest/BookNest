@@ -241,7 +241,7 @@ def checkout():
                 order=order,
                 book_id=book.id,
                 quantity=qty,
-                price=book.price
+                unit_price=book.price
             )
             db.session.add(order_item)
             book.stock_quantity -= qty
@@ -253,4 +253,3 @@ def checkout():
     session.modified = True
 
     return jsonify({"message": "Checkout successful", "order_id": order.id})
-
