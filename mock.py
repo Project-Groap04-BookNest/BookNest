@@ -473,17 +473,21 @@ with app.app_context():
         )
 
         # Order Items
+        from datetime import datetime, timedelta
+        now = datetime.now()
         order1_item1 = OrderItem(
             order=order1,
             book=books[0],
             quantity=1,
             unit_price=Decimal("299.00"),
+            created_at=now - timedelta(days=1)
         )
         order1_item2 = OrderItem(
             order=order1,
             book=books[1],
             quantity=1,
             unit_price=Decimal("450.00"),
+            created_at=now
         )
 
         db.session.add_all([order1, order1_item1, order1_item2])
