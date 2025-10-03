@@ -477,14 +477,18 @@ with app.app_context():
         now = datetime.now()
         order1_item1 = OrderItem(
             order=order1,
-            book=books[0],
+            book_title=books[0].title,
+            book_author=books[0].author,
+            book_image_path=books[0].image_path,
             quantity=1,
             unit_price=Decimal("299.00"),
             created_at=now - timedelta(days=1)
         )
         order1_item2 = OrderItem(
             order=order1,
-            book=books[1],
+            book_title=books[1].title,
+            book_author=books[1].author,
+            book_image_path=books[1].image_path,
             quantity=1,
             unit_price=Decimal("450.00"),
             created_at=now

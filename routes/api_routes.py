@@ -1,4 +1,3 @@
-
 from flask import Blueprint, jsonify, request, session
 from models.book import Book
 from models.order import Order
@@ -235,12 +234,20 @@ def checkout():
     db.session.add(order)
     total = 0
     for book_id, qty in cart.items():
+        try:
+            qty = int(qty)
+        except (TypeError, ValueError):
+            continue
+        if qty <= 0:
+            continue
         book = Book.query.get(int(book_id))
         if book and book.stock_quantity >= qty:
             subtotal = book.price * qty
             order_item = OrderItem(
                 order=order,
-                book_id=book.id,
+                book_title=book.title,
+                book_author=book.author,
+                book_image_path=book.image_path,
                 quantity=qty,
                 unit_price=book.price
             )
@@ -266,14 +273,15 @@ def get_order_items():
     for item in items:
         order = item.order
         user = order.user if order else None
-        book = item.book
         result.append({
             "order_item_id": item.id,
             "order_id": order.id if order else None,
             "user_id": user.id if user else None,
             "user_name": user.name if user else None,
-            "book_id": book.id if book else None,
-            "book_title": book.title if book else None,
+            # ใช้ข้อมูล snapshot จาก OrderItem
+            "book_title": item.book_title,
+            "book_author": item.book_author,
+            "book_image_path": item.book_image_path,
             "quantity": item.quantity,
             "unit_price": str(item.unit_price),
             "created_at": item.created_at.isoformat() if item.created_at else None,
