@@ -9,9 +9,10 @@ class OrderItem(db.Model):
     # FK ไปที่ Order
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
     order = relationship("Order", back_populates="items")
-    # FK ไปที่ Book
-    book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
-    book = relationship("Book", back_populates="order_items")
+    # Snapshot ข้อมูลหนังสือตอนสร้างออเดอร์เพื่อไม่ผูกกับตาราง books โดยตรง
+    book_title = db.Column(db.String(200), nullable=False)
+    book_author = db.Column(db.String(100), nullable=False)
+    book_image_path = db.Column(db.String(200), nullable=True)
     # จำนวนที่ซื้อ
     quantity = db.Column(db.Integer, nullable=False)
     # ราคาต่อหน่วยตอนซื้อ

@@ -224,13 +224,21 @@ def checkout():
     total = 0
 
     for book_id, qty in cart.items():
+        try:
+            qty = int(qty)
+        except (TypeError, ValueError):
+            continue
+        if qty <= 0:
+            continue
         book = Book.query.get(int(book_id))
         if book and book.stock_quantity >= qty:
             subtotal = book.price * qty
-            # ชื่อฟิลด์ราคาใช้ 'price' ให้ตรงกับ API checkout เดิมของโปรเจค
+            # บันทึก snapshot ของข้อมูลหนังสือใน OrderItem แทนการอ้าง FK โดยตรง
             db.session.add(OrderItem(
                 order=order,
-                book_id=book.id,
+                book_title=book.title,
+                book_author=book.author,
+                book_image_path=book.image_path,
                 quantity=qty,
                 unit_price=book.price
             ))

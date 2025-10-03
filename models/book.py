@@ -12,6 +12,3 @@ class Book(db.Model):
 
     category_id = db.Column(db.Integer, db.ForeignKey('book_categories.id'))
     category = relationship("BookCategory", back_populates="books")
-
-    # 👇 เพิ่มอันนี้
-    order_items = relationship("OrderItem", back_populates="book")
