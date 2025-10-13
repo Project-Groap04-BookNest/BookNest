@@ -53,8 +53,8 @@ with app.app_context():
 
         # Users
         users = [
-            User(name="Danielle", email="danielle@example.com", password_hash="1234", role="user"),
-            User(name="Emma", email="emma@example.com", password_hash="1234", role="stock_keeper"),
+            User(name="saran", email="saran@example.com", password_hash="1234", role="user"),
+            User(name="chitsanupat", email="chitsanupat@example.com", password_hash="1234", role="stock_keeper"),
             User(name="Admin", email="admin@example.com", password_hash="1234", role="admin"),
         ]
 
