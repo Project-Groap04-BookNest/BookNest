@@ -1,0 +1,8 @@
+<h2 class="text-xl font-bold mb-4">order history</h2>
+{% for o in orders %}
+    <div class="border-b py-2">
+        <p>order #{{ o.id }} - {{ o.total_amount }} บัท </p>
+    </div>
+{% else %}
+    <p>no history</p>
+{% endfor %}
