@@ -438,3 +438,12 @@ def manage_users():
 @ui_bp.app_errorhandler(403)
 def forbidden(e):
     return render_template("404.html"), 403
+
+
+#history
+@ui_bp.route("/history")
+def history():
+    if "user_id" not in session:
+        return redirect(url_for("ui.login"))
+    orders = Order.query.filter_by(user_id=session["user_id"]).order_by(Order.id.desc()).all()
+    return render_template("history.html", orders=orders)
