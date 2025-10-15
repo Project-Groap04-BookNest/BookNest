@@ -292,7 +292,10 @@ def register():
         name = request.form.get("name")
         email = request.form.get("email")
         password = request.form.get("password")
-
+        
+        if "@gmail.com" not in email:
+            return render_template("register.html", error="pls register with @gmail.com")
+        
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return render_template("register.html", error="อีเมลนี้ถูกใช้งานแล้ว")
