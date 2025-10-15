@@ -294,7 +294,7 @@ def register():
         password = request.form.get("password")
         
         if "@gmail.com" not in email:
-            return render_template("register.html", error="pls register with @gmail.com")
+            return render_template("register.html", error="must register with @gmail.com")
         
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
