@@ -250,6 +250,8 @@ def checkout():
 
     session["cart"] = {}
     session.modified = True
+
+    flash("thank you", "success")
     return redirect(url_for("ui.orders"))
 
 # ========================
