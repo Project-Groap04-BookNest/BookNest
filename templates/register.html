@@ -35,6 +35,13 @@
   </button>
 </form>
 
+{% if error %}
+  <div class="p-3 mb-3 rounded text-center bg-red-100 text-red-700">
+    {{ error }}
+  </div>
+{% endif %}
+
+
   </div>
 </div>
 
